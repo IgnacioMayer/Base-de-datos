@@ -56,4 +56,6 @@ while (menu):
       
     elif op == '2':
       menu = False
+      
+print ('hola')
         
