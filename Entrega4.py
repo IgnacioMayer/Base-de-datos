@@ -10,6 +10,7 @@ import psycopg2
 conn = psycopg2.connect(host="201.238.213.114",database="grupo18", user="grupo18", password="BQtmLl", port ="54321")
 
 
+
 print ("--------------------------------------------------------")
 print ("               ---== CrossNot ==---                     ")
 print ("--------------------------------------------------------")
@@ -59,7 +60,7 @@ while (login):
       menu = True 
       while (menu):
           mp = int(input('''
-                       ---== OPCIONES ==---
+                       ---== MENU OPCIONES ==---
                   [1] Ver Llamadas
                   [2] Evaluar Llamadas
                   [3] Manejar Campañas
@@ -70,80 +71,129 @@ while (login):
                   [8] Salir de CrossNot 
                   
                   Ingrese una opcion [1-8]:   '''))
-            
+          
           if mp == 3:
-                campagna = int(input('''
-                                    [1] Agregar Campaña
-                                    [2] Eliminar Campaña
-                                    [3] Editar Campaña
-                                        
-                                    Ingrese una opcion [1-3]:   '''))
-                if campagna == 1:
-                    c1 = int(input("Ingrese id_campaña:  "))
-                    c2 = input("Ingrese fecha inicio campaña (ej: '2019-09-30'):   ")
-                    c3 = input("Ingrese fecha fin campaña (ej: '2019-10-12'):   ")
-                    c4 = input("Ingrese id_tennant:   ")
-                    cur5 = conn.cursor()
-                    cur5.execute("INSERT INTO campagna(id_campagna,inicio,fin,id_tennant) VALUES({},{},{},{});".format('c1','c2','c3','c4'))
-                    conn.commit()
-                    cur5.close()
-                elif campagna == 2:
-                    c1 = int(input("Ingrese id_campaña:  "))
-                    cur5 = conn.cursor()
-                    cur5.execute("DELETE FROM campagna WHERE id_campagna = c1 .......;")
-                    conn.commit()
-                    cur5.close()
-                elif campagna == 3:
-                        c1 = int(input("Ingrese id_campaña:  "))
-                        print()
-                        ed5 = int(input('''
-                                    [1] Editar id_campaña
-                                    [2] Editar fecha inicio campaña
-                                    [3] Editar fecha fin campaña
-                                    [4] Editar id_tennant
-                                        
-                                    Ingrese una opcion [1-4]:   '''))
-                        if ed5 == 1:
-                            ed5n = int(input("Ingrese nuevo id_campaña:  "))
-                            cur5 = conn.cursor()
-                            cur5.execute("UPDATE campagna SET id_campagna = ed5n WHERE id_campagna = c1 .......;")
-                            conn.commit()
-                            cur5.close()
-                        elif ed5 == 2:
-                            ed5n = input("Ingrese nueva fecha inicio(ej: '2019-09-30'):  ")
-                            cur5 = conn.cursor()
-                            cur5.execute("UPDATE campagna SET inicio = ed5n WHERE id_campagna = c1 .......;")
-                            conn.commit()
-                            cur5.close()
-                        elif ed5 == 3:
-                            ed5n = input("Ingrese nueva fecha fin (ej: '2019-10-12'):  ")
-                            cur5 = conn.cursor()
-                            cur5.execute("UPDATE campagna SET fin = ed5n WHERE id_campagna = c1 .......;")
-                            conn.commit()
-                            cur5.close()
-                        elif ed5 == 4:
-                            ed5n = int(input("Ingrese nuevo id_tennant:  "))
-                            cur5 = conn.cursor()
-                            cur5.execute("UPDATE campagna SET id_tennant = ed5n WHERE id_campagna = c1 .......;")
-                            conn.commit()
-                            cur5.close()
-                    
-                else:
-                    print('Opcion invalida, ingrese opcion nuevamente')
+              o3 = True
+              while (o3):
                     campagna = int(input('''
-                                    [1] Agregar Campaña
-                                    [2] Eliminar Campaña
-                                    [3] Editar Campaña)
-                                        
-                                    Ingrese una opcion [1-3]:   '''))
-      
-        
+                         ---== Manejar Campañas ==---
+                         [1] Agregar Campaña
+                         [2] Eliminar Campaña
+                         [3] Editar Campaña
+                         [4] Volver Menu Opciones
+                         [5] Salir de CrossNot
+                            
+                         Ingrese una opcion [1-5]:   '''))
+                    while campagna <1 or campagna >=6:
+                        print()
+                        print('Opcion invalida, ingrese opcion nuevamente')
+                        print()
+                        campagna = int(input('''
+                         ---== Manejar Campañas ==---
+                         [1] Agregar Campaña
+                         [2] Eliminar Campaña
+                         [3] Editar Campaña
+                         [4] Volver Menu Opciones
+                         [5] Salir de CrossNot
+                            
+                         Ingrese una opcion [1-5]:   '''))
+                        
+                    if campagna == 1:
+                        c1 = int(input("Ingrese id_campaña:  "))
+                        c2 = input("Ingrese fecha inicio campaña (ej: '2019-09-30'):   ")
+                        c3 = input("Ingrese fecha fin campaña (ej: '2019-10-12'):   ")
+                        c4 = input("Ingrese id_tennant:   ")
+                        cur5 = conn.cursor()
+                        cur5.execute("INSERT INTO campagna(id_campagna,inicio,fin,id_tennant) VALUES({},{},{},{});".format('c1','c2','c3','c4'))
+                        conn.commit()
+                        cur5.close()
+                        o3 = False
+                    elif campagna == 2:
+                        c1 = int(input("Ingrese id_campaña:  "))
+                        cur5 = conn.cursor()
+                        cur5.execute("DELETE FROM campagna WHERE id_campagna = {};".format('c1'))
+                        conn.commit()
+                        cur5.close()
+                        o3 = False
+                    elif campagna == 3:
+                            c1 = int(input("Ingrese id_campaña:  "))
+                            print()
+                            ed5 = int(input('''
+                                ---== Editor de Campañas ==---
+                                [1] Editar id_campaña
+                                [2] Editar fecha inicio campaña
+                                [3] Editar fecha fin campaña
+                                [4] Editar id_tennant
+                                [5] Volver Menu Opciones
+                                [6] Salir de CrossNot
+                                
+                                    
+                                Ingrese una opcion [1-6]:   '''))
+                            
+                            #Opcion invalida 
+                            while ed5 < 1 or ed5 >= 7:
+                                print()
+                                print('Opcion invalida, ingrese opcion nuevamente')
+                                print()
+                                ed5 = int(input('''
+                                ---== Editor de Campañas ==---
+                                [1] Editar id_campaña
+                                [2] Editar fecha inicio campaña
+                                [3] Editar fecha fin campaña
+                                [4] Editar id_tennant
+                                [5] Volver Menu Opciones
+                                [6] Salir de CrossNot
+                                    
+                                Ingrese una opcion [1-6]:   '''))
+                                
+                            if ed5 == 1:
+                                ed5n = int(input("Ingrese nuevo id_campaña:  "))
+                                cur5 = conn.cursor()
+                                cur5.execute("UPDATE campagna SET id_campagna = {} WHERE id_campagna = {};".format('ed5n','c1'))
+                                conn.commit()
+                                cur5.close()
+                            elif ed5 == 2:
+                                ed5n = input("Ingrese nueva fecha inicio(ej: '2019-09-30'):  ")
+                                cur5 = conn.cursor()
+                                cur5.execute("UPDATE campagna SET inicio = {} WHERE id_campagna = {};".format('ed5n','c1'))
+                                conn.commit()
+                                cur5.close()
+                            elif ed5 == 3:
+                                ed5n = input("Ingrese nueva fecha fin (ej: '2019-10-12'):  ")
+                                cur5 = conn.cursor()
+                                cur5.execute("UPDATE campagna SET fin = {} WHERE id_campagna = {};".format('ed5n','c1'))
+                                conn.commit()
+                                cur5.close()
+                            elif ed5 == 4:
+                                ed5n = int(input("Ingrese nuevo id_tennant:  "))
+                                cur5 = conn.cursor()
+                                cur5.execute("UPDATE campagna SET id_tennant = {} WHERE id_campagna = {};".format('ed5n','c1'))
+                                conn.commit()
+                                cur5.close()  
+                            elif ed5 == 5:
+                                o3 = False
+                            elif ed5 == 6 :
+                                login = False
+                            o3 = False
+                    
+                    elif campagna == 4:  
+                        o3 = False 
+                    
+                    elif campagna == 5:
+                        print("Gracias por utilizar CrossNot")
+                        login = False
+  
+          elif mp == 8:
+              print("Gracias por utilizar CrossNot")
+              o3 = False
+              login = False
+    
     elif op == '2':
           login = False
 
 
       
-    
+conn.close()     
       
 
-conn.close()      
+    
