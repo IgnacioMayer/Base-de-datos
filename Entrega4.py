@@ -126,27 +126,13 @@ while (login):
                      Ingrese una opcion [1-5]:   '''))
                     
                   #agregar campaña
-                  if campagna == 1:
-                    ingresar = True 
-                    while (ingresar):
-                      c1 = int(input("Ingrese id_campaña:  "))
-                      j=0
-                      for i in campagnas:
-                          if i[0] == c1:
-                              if j == len(campagnas)-1:
-                                  print ()
-                                  print('Este id_campaña ya existe, ingrese otra opcion nuevamente')                                                        
-                          else:
-                              ingresar = False 
-                          j+= 1    
-                    '''
+                  if campagna == 1: 
                     c2 = input("Ingrese fecha inicio campaña (ej: '2019-09-30'):   ")
                     c3 = input("Ingrese fecha fin campaña (ej: '2019-10-12'):   ")
                     cur5 = conn.cursor()
-                    cur5.execute("INSERT INTO campagna(id_campagna,inicio,fin,id_tennant) VALUES({},{},{},{});".format('c1','c2','c3','tennant'))
+                    cur5.execute("INSERT INTO campagna(inicio,fin,id_tennant) VALUES({},{},{},{});".format('c2','c3','tennant'))
                     conn.commit()
-                    cur5.close()'''
-                    print('hola')
+                    cur5.close()
                     break 
                   
                   ingresar = True 
@@ -206,6 +192,7 @@ while (login):
                             cur5.execute("UPDATE campagna SET id_campagna = {} WHERE id_campagna = {};".format('ed5n','c1'))
                             conn.commit()
                             cur5.close()
+                            break
                         #Editar fecha inicio campaña
                         elif ed5 == 2:
                             ed5n = input("Ingrese nueva fecha inicio(ej: '2019-09-30'):  ")
@@ -213,6 +200,7 @@ while (login):
                             cur5.execute("UPDATE campagna SET inicio = {} WHERE id_campagna = {};".format('ed5n','c1'))
                             conn.commit()
                             cur5.close()
+                            break
                         #Editar fecha fin campaña
                         elif ed5 == 3:
                             ed5n = input("Ingrese nueva fecha fin (ej: '2019-10-12'):  ")
@@ -220,6 +208,7 @@ while (login):
                             cur5.execute("UPDATE campagna SET fin = {} WHERE id_campagna = {};".format('ed5n','c1'))
                             conn.commit()
                             cur5.close()
+                            break
                         #Editar id_tennant
                         elif ed5 == 4:
                             ed5n = int(input("Ingrese nuevo id_tennant:  "))
