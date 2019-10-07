@@ -77,7 +77,86 @@ while (login):
                   
                   Ingrese una opcion [1-8]:   '''))
           
-          if mp == 3:
+          if mp == 1:
+              o1 = True 
+              while (o1):
+                  llamada = int(input('''
+                     ---== Ver Llamadas ==---
+                     [1] Ver Llamada
+                     [2] Agregar Llamada
+                     [3] Editar Campaña
+                     [4] Eliminar Llamada
+                     [5] Volver Menu Opciones
+                     [6] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-6]:   '''))
+                          
+                  #Opcion Invalida
+                  while llamada <1 or llamada >=7:
+                    print()
+                    print('Opcion invalida, ingrese opcion nuevamente')
+                    print()
+                    llamada = int(input('''
+                     ---== Ver Llamadas ==---
+                     [1] Ver Llamada
+                     [2] Agregar Llamada
+                     [3] Editar Campaña
+                     [4] Eliminar Llamada
+                     [5] Volver Menu Opciones
+                     [6] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-6]:   '''))
+                  
+                  #Volver Menu Opciones
+                  if llamada == 4:  
+                    o1 = False
+                  #Salir de CrossNot
+                  elif llamada == 5:
+                    print()
+                    print("Gracias por utilizar CrossNot")
+                    menu = False
+                    login = False
+                    break
+                
+          elif mp == 2:
+              o2 = True 
+              while (o2):
+                  llamada2 = int(input('''
+                     ---== Evaluar Llamadas ==---
+                     [1] Agregar calificación
+                     [2] Editar calificación
+                     [3] Eliminar calificación
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                          
+                  #Opcion Invalida
+                  while llamada2 <1 or llamada2 >=6:
+                    print()
+                    print('Opcion invalida, ingrese opcion nuevamente')
+                    print()
+                    llamada2 = int(input('''
+                     ---== Evaluar Llamadas ==---
+                     [1] Agregar calificación
+                     [2] Editar calificación
+                     [3] Eliminar calificación
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                  #Volver Menu Opciones
+                  if llamada2 == 4:  
+                    o2 = False
+                  #Salir de CrossNot
+                  elif llamada2 == 5:
+                    print()
+                    print("Gracias por utilizar CrossNot")
+                    menu = False
+                    login = False
+                    break
+                
+          elif mp == 3:
               query = 'SELECT * FROM campagna'
               loc = conn.cursor()
               loc.execute(query)
@@ -237,8 +316,50 @@ while (login):
                     menu = False
                     login = False
                     break 
-            
-            
+        
+          elif mp == 4:
+              o4 = True 
+              while (o2):
+                  tipificacion = int(input('''
+                     ---== Manejar Tipificaciones ==---
+                     [1] Agregar tipificación
+                     [2] Asociar tipificación
+                     [3] Eliminar tipificación
+                     [4] Editar tipificación
+                     [5] Editar asociación 
+                     [6] Volver Menu Opciones
+                     [7] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-7]:   '''))
+                          
+                  #Opcion Invalida
+                  while tipificacion <1 or tipificacion >=8:
+                    print()
+                    print('Opcion invalida, ingrese opcion nuevamente')
+                    print()
+                    tipificacion = int(input('''
+                     ---== Manejar Tipificaciones ==---
+                     [1] Agregar tipificación
+                     [2] Asociar tipificación
+                     [3] Eliminar tipificación
+                     [4] Editar tipificación
+                     [5] Editar asociación 
+                     [6] Volver Menu Opciones
+                     [7] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-7]:   '''))
+                    
+                  #Volver Menu Opciones
+                  if tipificacion == 4:  
+                    o2 = False
+                  #Salir de CrossNot
+                  elif tipificacion == 5:
+                    print()
+                    print("Gracias por utilizar CrossNot")
+                    menu = False
+                    login = False
+                    break  
+                
           elif mp == 8:
               print()
               print("Gracias por utilizar CrossNot")
