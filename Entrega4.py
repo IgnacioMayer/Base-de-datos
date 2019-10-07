@@ -108,10 +108,10 @@ while (login):
                      Ingrese una opcion [1-6]:   '''))
                   
                   #Volver Menu Opciones
-                  if llamada == 4:  
+                  if llamada == 5:  
                     o1 = False
                   #Salir de CrossNot
-                  elif llamada == 5:
+                  elif llamada == 6:
                     print()
                     print("Gracias por utilizar CrossNot")
                     menu = False
@@ -319,7 +319,7 @@ while (login):
         
           elif mp == 4:
               o4 = True 
-              while (o2):
+              while (o4):
                   tipificacion = int(input('''
                      ---== Manejar Tipificaciones ==---
                      [1] Agregar tipificación
@@ -350,16 +350,132 @@ while (login):
                      Ingrese una opcion [1-7]:   '''))
                     
                   #Volver Menu Opciones
-                  if tipificacion == 4:  
-                    o2 = False
+                  if tipificacion == 6:  
+                    o4 = False
                   #Salir de CrossNot
-                  elif tipificacion == 5:
+                  elif tipificacion == 7:
                     print()
                     print("Gracias por utilizar CrossNot")
                     menu = False
                     login = False
                     break  
+          
+          elif mp == 5:
+              o5 = True 
+              while (o5):
+                  agente = int(input('''
+                     ---== Manejar Agentes ==---
+                     [1] Agregar agente
+                     [2] Editar información
+                     [3] Eliminar agente
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                          
+                  #Opcion Invalida
+                  while agente <1 or agente >=6:
+                    print()
+                    print('Opcion invalida, ingrese opcion nuevamente')
+                    print()
+                    agente = int(input('''
+                     ---== Manejar Agentes ==---
+                     [1] Agregar agente
+                     [2] Editar información
+                     [3] Eliminar agente
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                    
+                  #Volver Menu Opciones
+                  if agente == 4:  
+                    o5 = False
+                  #Salir de CrossNot
+                  elif agente == 5:
+                    print()
+                    print("Gracias por utilizar CrossNot")
+                    menu = False
+                    login = False
+                    break      
                 
+          elif mp == 6:
+              o6 = True 
+              while (o6):
+                  supervisor = int(input('''
+                     ---== Manejar supervisores  ==---
+                     [1] Agregar supervisor
+                     [2] Editar información
+                     [3] Eliminar supervisor
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                          
+                  #Opcion Invalida
+                  while supervisor <1 or supervisor >=6:
+                    print()
+                    print('Opcion invalida, ingrese opcion nuevamente')
+                    print()
+                    supervisor = int(input('''
+                     ---== Manejar supervisores  ==---
+                     [1] Agregar supervisor
+                     [2] Editar información
+                     [3] Eliminar supervisor
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                    
+                  #Volver Menu Opciones
+                  if supervisor == 4:  
+                    o6 = False
+                  #Salir de CrossNot
+                  elif supervisor == 5:
+                    print()
+                    print("Gracias por utilizar CrossNot")
+                    menu = False
+                    login = False
+                    break 
+                
+          elif mp == 7:
+              o7 = True 
+              while (o7):
+                  tennant1 = int(input('''
+                     ---== Manejar tennants   ==---
+                     [1] Agregar tennant
+                     [2] Editar información
+                     [3] Eliminar tennant
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                          
+                  #Opcion Invalida
+                  while tennant1 <1 or tennant1>=6:
+                    print()
+                    print('Opcion invalida, ingrese opcion nuevamente')
+                    print()
+                    tennant1 = int(input('''
+                     ---== Manejar tennants   ==---
+                     [1] Agregar tennant
+                     [2] Editar información
+                     [3] Eliminar tennant
+                     [4] Volver Menu Opciones
+                     [5] Salir de CrossNot
+                        
+                     Ingrese una opcion [1-5]:   '''))
+                    
+                  #Volver Menu Opciones
+                  if tennant1 == 4:  
+                    o7 = False
+                  #Salir de CrossNot
+                  elif tennant1 == 5:
+                    print()
+                    print("Gracias por utilizar CrossNot")
+                    menu = False
+                    login = False
+                    break      
           elif mp == 8:
               print()
               print("Gracias por utilizar CrossNot")
