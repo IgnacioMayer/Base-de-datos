@@ -285,23 +285,26 @@ while (login):
                             break
                     
               elif mp == 3:
-                  query = 'SELECT * FROM campagna'
+                  query = '''SELECT c.id_campagna, c.inicio, c.fin
+                            FROM campagna c, tennant t 
+                            WHERE c.id_tennant = t.id AND c.id_tennant = {}
+                            ORDER BY c.id_campagna'''.format(tennant)
                   loc = conn.cursor()
                   loc.execute(query)
                   a = loc.fetchall()
                   loc.close()
                   campagnas = []
                   print ()
-                  print("Lista de Campañas en CrossNot")
+                  print("Lista de Campañas del Tennant {} en CrossNot".format(tennant))
                   print()
-                  print ('Id_campaña | Fecha inicio campaña | Fecha fin campaña | Id_tennant')
+                  print ('Id_campaña | Fecha inicio campaña | Fecha fin campaña')
                   
                   i = 0
                   while i < len(a):
                       b = []
                       b.append(a[i][0])
                       b.append(a[i][1])
-                      print ('{}     | {}     | {}    |     {}'.format(a[i][0], a[i][1], a[i][2], a[i][3]))
+                      print ('{}     | {}     | {}    '.format(a[i][0], a[i][1], a[i][2]))
                       campagnas.append(b)
                       i+=1
                       
@@ -317,7 +320,8 @@ while (login):
                             
                          Ingrese una opcion [1-5]:   ''')
                       if (Is_int(campagna)):
-                          campagna = int(campagna)        
+                          campagna = int(campagna)  
+
                           #agregar campaña
                           if campagna == 1: 
                             c2 = input("Ingrese fecha inicio campaña (ej: '2019-09-30'):   ")
