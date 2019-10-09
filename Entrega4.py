@@ -450,6 +450,26 @@ while (login):
               elif mp == 5:
                   o5 = True 
                   while (o5):
+                      id_tennants = []
+                      for i in tennants:
+                          id_tennants.append(i[0])
+                      print (''' 
+                                   --== Agentes actuales del Tennant {} ==--
+                                   '''.format(tennant))
+                      query = 'SELECT * FROM agente WHERE id_tennant = {}'.format(tennant)
+                      loc = conn.cursor()
+                      loc.execute(query)
+                      a = loc.fetchall()
+                      loc.close()
+                      id_agentes = []
+                      print('ID |  nombre  |  apellido  |  ID tennant')
+                      
+                      i = 0
+                      while i < len(a):
+                          print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                          id_agentes.append(a[i][0])
+                          i+=1
+                      
                       agente = input('''
                          ---== Manejar Agentes ==---
                          [1] Agregar agente
@@ -462,7 +482,88 @@ while (login):
                       if (Is_int(agente)):
                           agente = int(agente)
                           #Volver Menu Opciones
-                          if agente == 4:  
+                          if agente == 1:
+                              nombre = input("Ingrese Nombre: ").upper()
+                              apellido = input("Ingrese Apellido: ").upper()
+                              tennant = input("Ingrese id_tennant donde trabaja: ")
+                              if (Is_int(tennant)):
+                                  tennant = int(tennant)
+                                  if tennant in id_tennants:
+                                        cur5 = conn.cursor()
+                                        cur5.execute("INSERT INTO agente(nombre, apellido ,id_tennant) VALUES({},{},{},{});".format('nombre','apellido','tennant'))
+                                        conn.commit()
+                                        cur5.close()
+                                  else:
+                                      print("El id Tennant ingresado no existe en nuestros registros...")
+                              else:
+                                  print ("Error:   Ingrese un número")
+                          elif agente == 2:
+                                print('''
+                                    ---== Editor de Agentes ==---
+                                    ''')
+                                edit = input("Ingrese el id del agente al cual desea editar: ")
+                                if (Is_int(edit)):
+                                    edit = int(edit)
+                                    if (edit in id_agentes):
+                                        query = 'SELECT * FROM agente WHERE id_agente = {}'.format(edit)
+                                        loc = conn.cursor()
+                                        loc.execute(query)
+                                        a = loc.fetchall()
+                                        loc.close()
+                                        id_agentes = []
+                                        print('ID |  nombre  |  apellido  |  ID tennant')
+                                      
+                                        i = 0
+                                        while i < len(a):
+                                            print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                                            i+=1
+                                    
+                                        ed5 = input('''
+                                            [1] Editar nombre
+                                            [2] Editar apellido
+                                            [3] Volver Menu Opciones
+                                            [4] Salir de CrossNot
+                                            
+                                                
+                                            Ingrese una opcion [1-5]:   ''')
+                                        if (Is_int(ed5)):
+                                            llamada = int(ed5)
+                                            #Editar id_campaña
+                                            if ed5 == 1:
+                                                nombre = input("Ingrese nuevo nombre:  ").upper()
+                                                cur5 = conn.cursor()
+                                                cur5.execute("UPDATE agente SET nombre = {} WHERE id_agente = {};".format(nombre, edit))
+                                                conn.commit()
+                                                cur5.close() 
+                                                break
+                                            elif ed5 == 2:
+                                                apellido = input("Ingrese nuevo apellido:  ").upper()
+                                                cur5 = conn.cursor()
+                                                cur5.execute("UPDATE agente SET apellido = {} WHERE id_agente = {};".format(apellido, edit))
+                                                conn.commit()
+                                                cur5.close() 
+                                                break
+                                            #Volver Menu Opciones
+                                            elif ed5 == 3:
+                                                break 
+                                            #Salir de CrossNot
+                                            elif ed5 == 4 :
+                                                print()
+                                                print("Gracias por utilizar CrossNot")
+                                                menu = False
+                                                login = False
+                                                break 
+                                
+                                
+                          elif agente == 3:
+                                errase = input("Ingrese el id del agente al cual desea eliminar: ")
+                                if (Is_int(errase)):
+                                    errase = int(errase)
+                                    cur5 = conn.cursor()
+                                    cur5.execute('DELETE FROM agente WHERE id_agente = {} AND id_tennant = {};'.format(errase, id_tennant))
+                                    conn.commit()
+                                    cur5.close()
+                          elif agente == 4:  
                             o5 = False
                           #Salir de CrossNot
                           elif agente == 5:
