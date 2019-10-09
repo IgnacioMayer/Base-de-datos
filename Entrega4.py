@@ -484,18 +484,12 @@ while (login):
                           if agente == 1:
                               nombre = input("Ingrese Nombre: ").upper()
                               apellido = input("Ingrese Apellido: ").upper()
-                              tennant = input("Ingrese id_tennant donde trabaja: ")
-                              if (Is_int(tennant)):
-                                  tennant = int(tennant)
-                                  if tennant in id_tennants:
-                                        cur5 = conn.cursor()
-                                        cur5.execute("INSERT INTO agente(nombre, apellido ,id_tennant) VALUES({},{},{});".format(nombre,apellido,tennant))
-                                        conn.commit()
-                                        cur5.close()
-                                  else:
-                                      print("El id Tennant ingresado no existe en nuestros registros...")
-                              else:
-                                  print ("Error:   Ingrese un número")
+                              
+                              cur5 = conn.cursor()
+                              cur5.execute("INSERT INTO agente(nombre, apellido ,id_tennant) VALUES({},{},{});".format(nombre,apellido,tennant))
+                              conn.commit()
+                              cur5.close()
+                        
                           elif agente == 2:
                                 print('''
                                     ---== Editor de Agentes ==---
@@ -520,6 +514,7 @@ while (login):
                                         ed5 = input('''
                                             [1] Editar nombre
                                             [2] Editar apellido
+                                            [3] Editar id tennant 
                                             [3] Volver Menu Opciones
                                             [4] Salir de CrossNot
                                             
@@ -542,11 +537,24 @@ while (login):
                                                 conn.commit()
                                                 cur5.close() 
                                                 break
-                                            #Volver Menu Opciones
                                             elif ed5 == 3:
+                                                  tennant1 = input("Ingrese id_tennant donde trabajará: ")
+                                                  if (Is_int(tennant1)):
+                                                      tennant1 = int(tennant1)
+                                                      if tennant1 in id_tennants:
+                                                            cur5 = conn.cursor()
+                                                            cur5.execute("UPDATE agente SET id_tennant = {} WHERE id_agente = {};".format(tennant1, edit))
+                                                            conn.commit()
+                                                            cur5.close()
+                                                      else:
+                                                          print("El id Tennant ingresado no existe en nuestros registros...")
+                                                  else:
+                                                      print ("Error:   Ingrese un número")
+                                            #Volver Menu Opciones
+                                            elif ed5 == 4:
                                                 break 
                                             #Salir de CrossNot
-                                            elif ed5 == 4 :
+                                            elif ed5 == 5 :
                                                 print()
                                                 print("Gracias por utilizar CrossNot")
                                                 menu = False
@@ -586,7 +594,7 @@ while (login):
                       for i in tennants:
                           id_tennants.append(i[0])
                       print (''' 
-                                   --== Supervisore actuales del Tennant {} ==--
+                                   --== Supervisores actuales del Tennant {} ==--
                                    '''.format(tennant))
                       query = 'SELECT * FROM supervisor WHERE id_tennant = {}'.format(tennant)
                       loc = conn.cursor()
@@ -615,18 +623,10 @@ while (login):
                           if supervisor == 1:
                               nombre = input("Ingrese Nombre: ").upper()
                               apellido = input("Ingrese Apellido: ").upper()
-                              tennant = input("Ingrese id_tennant donde trabajará: ")
-                              if (Is_int(tennant)):
-                                  tennant = int(tennant)
-                                  if tennant in id_tennants:
-                                        cur5 = conn.cursor()
-                                        cur5.execute("INSERT INTO supervisor(nombre, apellido ,id_tennant) VALUES({},{},{});".format(nombre,apellido,tennant))
-                                        conn.commit()
-                                        cur5.close()
-                                  else:
-                                      print("El id Tennant ingresado no existe en nuestros registros...")
-                              else:
-                                  print ("Error:   Ingrese un número")
+                              cur5 = conn.cursor()
+                              cur5.execute("INSERT INTO supervisor(nombre, apellido ,id_tennant) VALUES({},{},{});".format(nombre,apellido,tennant))
+                              conn.commit()
+                              cur5.close()
                           elif supervisor == 2:
                                 print('''
                                     ---== Editor de Supervisores ==---
@@ -651,8 +651,9 @@ while (login):
                                         ed5 = input('''
                                             [1] Editar nombre
                                             [2] Editar apellido
-                                            [3] Volver Menu Opciones
-                                            [4] Salir de CrossNot
+                                            [3] Editar id tennant
+                                            [4] Volver Menu Opciones
+                                            [5] Salir de CrossNot
                                             
                                                 
                                             Ingrese una opcion [1-5]:   ''')
@@ -673,11 +674,24 @@ while (login):
                                                 conn.commit()
                                                 cur5.close() 
                                                 break
-                                            #Volver Menu Opciones
                                             elif ed5 == 3:
+                                                  tennant1 = input("Ingrese id_tennant donde trabajará: ")
+                                                  if (Is_int(tennant1)):
+                                                      tennant1 = int(tennant1)
+                                                      if tennant1 in id_tennants:
+                                                            cur5 = conn.cursor()
+                                                            cur5.execute("UPDATE supervisor SET id_tennant = {} WHERE id_supervisor = {};".format(tennant1, edit))
+                                                            conn.commit()
+                                                            cur5.close()
+                                                      else:
+                                                          print("El id Tennant ingresado no existe en nuestros registros...")
+                                                  else:
+                                                      print ("Error:   Ingrese un número")
+                                            #Volver Menu Opciones
+                                            elif ed5 == 4:
                                                 break 
                                             #Salir de CrossNot
-                                            elif ed5 == 4 :
+                                            elif ed5 == 5 :
                                                 print()
                                                 print("Gracias por utilizar CrossNot")
                                                 menu = False
