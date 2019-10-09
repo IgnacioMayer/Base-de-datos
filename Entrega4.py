@@ -424,8 +424,36 @@ while (login):
                             break 
             
               elif mp == 4:
+                  query = '''SELECT c.id_campagna
+                            FROM campagna c, tennant t 
+                            WHERE c.id_tennant = t.id AND c.id_tennant = {}
+                            ORDER BY c.id_campagna'''.format(tennant)
+                  loc = conn.cursor()
+                  loc.execute(query)
+                  a = loc.fetchall()
+                  loc.close()
+                  campagnas4 = []
+                  print ()
+                  print("Lista de Campañas del Tennant {} en CrossNot".format(tennant))
+                  print()
+                  print ('   Id_campaña   ')
+                  
+                  i = 0
+                  while i < len(a):
+                      b = []
+                      b.append(a[i][0])
+                      b.append(a[i][1])
+                      print ('{}     '.format(a[i][0]))
+                      campagnas4.append(b)
+                      i+=1
+                      
                   o4 = True 
                   while (o4):
+                       select_campagna = input('Seleccione Id_Campaña:    ')
+                       if (Is_int(select_campagna)):
+                          select_campagna = int(select_campagna) 
+                          
+                          
                        tipificacion = input('''
                          ---== Manejar Tipificaciones ==---
                          [1] Agregar tipificación
@@ -437,6 +465,7 @@ while (login):
                          [7] Salir de CrossNot
                             
                          Ingrese una opcion [1-7]:   ''')
+                       
                        if (Is_int(tipificacion)):
                           tipificacion = int(tipificacion)       
                           #Volver Menu Opciones
