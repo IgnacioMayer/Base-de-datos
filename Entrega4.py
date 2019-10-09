@@ -119,6 +119,16 @@ while (login):
               elif mp == 2:
                   o2 = True 
                   while (o2):
+                      query = 'SELECT id_supervisor FROM supervisor WHERE id_tennant = {};'.format(tennant)
+                      loc = conn.cursor()
+                      loc.execute(query)
+                      a = loc.fetchall()
+                      loc.close()
+                      supervisores = []
+                      i = 0
+                      while i < len(a):
+                          supervisores.append(a[i][0])
+                          i+=1
                       llamada2 = input('''
                          ---== Evaluar Llamadas ==---
                          [1] Agregar calificación
@@ -129,18 +139,149 @@ while (login):
                             
                          Ingrese una opcion [1-5]:   ''')
                       if (Is_int(llamada2)):
-                          llamada = int(llamada2)        
-                      
-                          #Volver Menu Opciones
-                          if llamada2 == 4:  
-                            o2 = False
-                          #Salir de CrossNot
-                          elif llamada2 == 5:
-                            print()
-                            print("Gracias por utilizar CrossNot")
-                            menu = False
-                            login = False
-                            break
+                          llamada2 = int(llamada2)
+                          if 0<llamada2<4:
+                              #mostramos todas las llamdas ya clasificadas
+                              query = 'SELECT l.id_llamada, l.id_supervisor, l.aprobacion FROM llamada l, supervisor s WHERE l.id_supervisor = s.id_supervisor AND s.id_tennant = {} ORDER BY l.id_supervisor;'.format(tennant)
+                              loc = conn.cursor()
+                              loc.execute(query)
+                              a = loc.fetchall()
+                              loc.close()
+                              l_clasificadas = [] #id de llamadas ya clasificadas
+                              print ()
+                              print("Lista de llamadas clasificadas del Tennant {}".format(tennant))
+                              print('id_llamada | id_supervisor | aprobacion')
+                          
+                              i = 0
+                              while i < len(a):
+                                  print('    {}     |        {}     |    {}     '.format(a[i][0],a[i][1], a[i][2]))
+                                  l_clasificadas.append(a[i][0])
+                                  i+=1
+                                  
+                          if llamada2 == 1:
+                              comprobar = True
+                              while(comprobar):
+                                  
+                                  supervisor = input('Ingrese su Id de supervisor: ')
+                                  if (Is_int(supervisor)):
+                                      supervisor = int(supervisor)
+                                      if supervisor in supervisores:
+                                          query = 'SELECT id_llamada FROM llamada l NATURAL JOIN agente a WHERE  l.aprobacion IS NULL AND a.id_tennant = {};'.format(tennant)
+                                          loc = conn.cursor()
+                                          loc.execute(query)
+                                          a = loc.fetchall()
+                                          loc.close()
+                                          llamada = []
+                                          print('ids llamadas sin supervisar')
+                                          print('-------------------------')
+                                          i = 0
+                                          while i < len(a):
+                                              llamada.append(a[i][0])
+                                              print(a[i][0])
+                                              i+=1
+                                          i = True
+                                          while (i):
+                                              aprobar = input('Ingrese id de la llamada que desea supervisar: ')
+                                              if (Is_int(aprobar)):
+                                                  aprobar = int(aprobar)
+                                                  if aprobar in llamada:
+                                                      x = input('Ingrese (1) si desea aprobar la llamada, (0) para desaprobar: ')
+                                                      if (Is_int(x)):
+                                                           x = int(x)
+                                                           if x == 1:
+                                                               
+                                                                cur = conn.cursor()
+                                                                cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
+                                                                conn.commit()
+                                                                cur.close()
+                                                                i = False
+                                                                comprobar = False
+                                                           elif x == 0:
+                                                                cur = conn.cursor()
+                                                                cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
+                                                                conn.commit()
+                                                                cur.close()
+                                                                i = False
+                                                                comprobar = False
+                                                           else:
+                                                               print ("Ingrese número válido...")
+                                                      else:
+                                                           print("Ingrese un número...")
+                                      else:    
+                                          print('''
+                                                ERROR: Este id de supervisor no pertenece al Tennant {}
+                                          '''.format(tennant))
+                          
+                      elif llamada2 == 2:
+                          l = input('Ingrese el id de la llamada para la cual quiere editar su calificación: ')
+                          if (Is_int(l)):
+                              l = int(l)
+                              if l in l_clasificadas:
+                                  s = input('Ingrese su id de supervisor: ')
+                                  if (Is_int(s)):
+                                       s = int(s)
+                                       if s in supervisores:
+                                          x = input('Ingrese (1) si desea aprobar la llamada, (0) para desaprobar: ')
+                                          if (Is_int(x)):
+                                               x = int(x)
+                                               if x == 1:
+                                                   
+                                                    cur = conn.cursor()
+                                                    cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
+                                                    conn.commit()
+                                                    cur.close()
+                                                    i = False
+                                                    comprobar = False
+                                               elif x == 0:
+                                                    cur = conn.cursor()
+                                                    cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
+                                                    conn.commit()
+                                                    cur.close()
+                                                    i = False
+                                                    comprobar = False
+                                               else:
+                                                   print ("Ingrese número válido...")
+                                          else:
+                                               print("Ingrese un número...")
+                                  else:    
+                                      print('''
+                                                ERROR: Este id de supervisor no pertenece al Tennant {}
+                                          '''.format(tennant))
+                              else:
+                                  print ('Esta llamada no puede ser editada.')
+                          else:
+                              print ('Ingrese números')
+                                 
+                      elif llamada2 == 3:
+                          i = input('Ingrese el id de la llamada a la cual usted quiere eliminar la calificación: ')
+                          if (Is_int(i)):
+                              i = int(i)
+                              o = True
+                              while (o):
+                                  eliminar = input('''Esta seguro que desea eliminar la calificacion?
+                                                   
+                                                      si (1)                       no (2)          
+                                  ''')
+                                  if (eliminar == '1'):
+                                        cur = conn.cursor()
+                                        cur.execute("UPDATE llamada SET aprobacion = NULL, id_supervisor = NULL WHERE id_llamada = {};".format(i))
+                                        conn.commit()
+                                        cur.close()
+                                        o = False
+                                  elif (eliminar == '1'):
+                                      o = False
+                                  else:
+                                      print ('Ingrese una opcion válida.')
+                      #Volver Menu Opciones
+                      elif llamada2 == 4:  
+                        o2 = False
+                      #Salir de CrossNot
+                      elif llamada2 == 5:
+                        print()
+                        print("Gracias por utilizar CrossNot")
+                        menu = False
+                        login = False
+                        break
                     
               elif mp == 3:
                   query = 'SELECT * FROM campagna'
