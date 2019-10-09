@@ -62,16 +62,16 @@ while (login):
           tennant = input('''
                     Ingrese ID Tennant para  
                     Iniciar Sesion: ''' )
-          m=0
-          for i in tennants:
-              if str(i[0]) == tennant:
-                  inicio_sesion = False
-              else:
-                  if m == len(tennants)-1:
-                      print ()
-                      print('Opcion invalida, ingrese opcion nuevamente')     
-              m+= 1
-                  
+          
+          if(Is_int(tennant)):
+              tennant = int(tennant)
+              for i in tennants:
+                  if tennant in i:
+                      inicio_sesion = False
+          
+          else:
+              print("Ingrese opcion valida.")
+          
       menu = True 
       while (menu):
           mp = input('''
@@ -224,17 +224,16 @@ while (login):
                                               x = input('Ingrese (1) si desea aprobar la llamada, (0) para desaprobar: ')
                                               if (Is_int(x)):
                                                    x = int(x)
-                                                   if x == 1:
-                                                       
+                                                   if x == 1:      
                                                         cur = conn.cursor()
-                                                        cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
+                                                        cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(s, aprobar))
                                                         conn.commit()
                                                         cur.close()
                                                         i = False
                                                         comprobar = False
                                                    elif x == 0:
                                                         cur = conn.cursor()
-                                                        cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
+                                                        cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(s, aprobar))
                                                         conn.commit()
                                                         cur.close()
                                                         i = False
@@ -270,7 +269,7 @@ while (login):
                                             conn.commit()
                                             cur.close()
                                             o = False
-                                      elif (eliminar == '1'):
+                                      elif (eliminar == '2'):
                                           o = False
                                       else:
                                           print ('Ingrese una opcion válida.')
@@ -490,7 +489,7 @@ while (login):
                                   tennant = int(tennant)
                                   if tennant in id_tennants:
                                         cur5 = conn.cursor()
-                                        cur5.execute("INSERT INTO agente(nombre, apellido ,id_tennant) VALUES({},{},{},{});".format('nombre','apellido','tennant'))
+                                        cur5.execute("INSERT INTO agente(nombre, apellido ,id_tennant) VALUES({},{},{});".format(nombre,apellido,tennant))
                                         conn.commit()
                                         cur5.close()
                                   else:
@@ -527,7 +526,7 @@ while (login):
                                                 
                                             Ingrese una opcion [1-5]:   ''')
                                         if (Is_int(ed5)):
-                                            llamada = int(ed5)
+                                            ed5 = int(ed5)
                                             #Editar id_campaña
                                             if ed5 == 1:
                                                 nombre = input("Ingrese nuevo nombre:  ").upper()
@@ -553,16 +552,23 @@ while (login):
                                                 menu = False
                                                 login = False
                                                 break 
-                                
-                                
+                                            else:
+                                                print("Ingrese opción válida.")
+                                        else:
+                                                print("Ingrese opción válida.")
                           elif agente == 3:
                                 errase = input("Ingrese el id del agente al cual desea eliminar: ")
                                 if (Is_int(errase)):
                                     errase = int(errase)
-                                    cur5 = conn.cursor()
-                                    cur5.execute('DELETE FROM agente WHERE id_agente = {} AND id_tennant = {};'.format(errase, id_tennant))
-                                    conn.commit()
-                                    cur5.close()
+                                    if errase in id_agentes:
+                                        cur5 = conn.cursor()
+                                        cur5.execute('DELETE FROM agente WHERE id_agente = {} AND id_tennant = {};'.format(errase, tennant))
+                                        conn.commit()
+                                        cur5.close()
+                                    else:
+                                        print ('Este id agente no pertenece al Tennant {}'.format(tennant))
+                                else:
+                                    print('Ingrese números.')
                           elif agente == 4:  
                             o5 = False
                           #Salir de CrossNot
@@ -576,6 +582,25 @@ while (login):
               elif mp == 6:
                   o6 = True 
                   while (o6):
+                      id_tennants = []
+                      for i in tennants:
+                          id_tennants.append(i[0])
+                      print (''' 
+                                   --== Supervisore actuales del Tennant {} ==--
+                                   '''.format(tennant))
+                      query = 'SELECT * FROM supervisor WHERE id_tennant = {}'.format(tennant)
+                      loc = conn.cursor()
+                      loc.execute(query)
+                      a = loc.fetchall()
+                      loc.close()
+                      id_supervisores = []
+                      print('ID |  nombre  |  apellido  |  ID tennant')
+                      
+                      i = 0
+                      while i < len(a):
+                          print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                          id_supervisores.append(a[i][0])
+                          i+=1
                       supervisor = input('''
                          ---== Manejar supervisores  ==---
                          [1] Agregar supervisor
@@ -587,6 +612,94 @@ while (login):
                          Ingrese una opcion [1-5]:   ''')
                       if (Is_int(supervisor)):
                           supervisor = int(supervisor)        
+                          if supervisor == 1:
+                              nombre = input("Ingrese Nombre: ").upper()
+                              apellido = input("Ingrese Apellido: ").upper()
+                              tennant = input("Ingrese id_tennant donde trabajará: ")
+                              if (Is_int(tennant)):
+                                  tennant = int(tennant)
+                                  if tennant in id_tennants:
+                                        cur5 = conn.cursor()
+                                        cur5.execute("INSERT INTO supervisor(nombre, apellido ,id_tennant) VALUES({},{},{});".format(nombre,apellido,tennant))
+                                        conn.commit()
+                                        cur5.close()
+                                  else:
+                                      print("El id Tennant ingresado no existe en nuestros registros...")
+                              else:
+                                  print ("Error:   Ingrese un número")
+                          elif supervisor == 2:
+                                print('''
+                                    ---== Editor de Supervisores ==---
+                                    ''')
+                                edit = input("Ingrese el id del supervisor al cual desea editar: ")
+                                if (Is_int(edit)):
+                                    edit = int(edit)
+                                    if (edit in id_agentes):
+                                        query = 'SELECT * FROM supervisor WHERE id_supervisor = {}'.format(edit)
+                                        loc = conn.cursor()
+                                        loc.execute(query)
+                                        a = loc.fetchall()
+                                        loc.close()
+                                        id_agentes = []
+                                        print('ID |  nombre  |  apellido  |  ID tennant')
+                                      
+                                        i = 0
+                                        while i < len(a):
+                                            print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                                            i+=1
+                                    
+                                        ed5 = input('''
+                                            [1] Editar nombre
+                                            [2] Editar apellido
+                                            [3] Volver Menu Opciones
+                                            [4] Salir de CrossNot
+                                            
+                                                
+                                            Ingrese una opcion [1-5]:   ''')
+                                        if (Is_int(ed5)):
+                                            ed5 = int(ed5)
+                                            #Editar id_campaña
+                                            if ed5 == 1:
+                                                nombre = input("Ingrese nuevo nombre:  ").upper()
+                                                cur5 = conn.cursor()
+                                                cur5.execute("UPDATE supervisor SET nombre = {} WHERE id_supervisor = {};".format(nombre, edit))
+                                                conn.commit()
+                                                cur5.close() 
+                                                break
+                                            elif ed5 == 2:
+                                                apellido = input("Ingrese nuevo apellido:  ").upper()
+                                                cur5 = conn.cursor()
+                                                cur5.execute("UPDATE supervisor SET apellido = {} WHERE id_supervisor = {};".format(apellido, edit))
+                                                conn.commit()
+                                                cur5.close() 
+                                                break
+                                            #Volver Menu Opciones
+                                            elif ed5 == 3:
+                                                break 
+                                            #Salir de CrossNot
+                                            elif ed5 == 4 :
+                                                print()
+                                                print("Gracias por utilizar CrossNot")
+                                                menu = False
+                                                login = False
+                                                break 
+                                            else:
+                                                print("Ingrese opción válida.")
+                                        else:
+                                                print("Ingrese opción válida.")
+                          elif supervisor == 3:
+                                errase = input("Ingrese el id del supervisor al cual desea eliminar: ")
+                                if (Is_int(errase)):
+                                    errase = int(errase)
+                                    if errase in id_supervisores:
+                                        cur5 = conn.cursor()
+                                        cur5.execute('DELETE FROM supervisor WHERE id_supervisor = {} AND id_tennant = {};'.format(errase, tennant))
+                                        conn.commit()
+                                        cur5.close()
+                                    else:
+                                        print ('Este id supervisor no pertenece al Tennant {}'.format(tennant))
+                                else:
+                                    print('Ingrese números.')
                           #Volver Menu Opciones
                           if supervisor == 4:  
                             o6 = False
