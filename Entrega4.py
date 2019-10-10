@@ -21,6 +21,60 @@ def Is_str(x):
     except:
         return True
 
+from datetime import datetime
+
+from datetime import datetime
+
+
+#funcion sacada de la pagina https://python-para-impacientes.blogspot.com/2014/02/operaciones-con-fechas-y-horas.html
+def main(i,f):
+ # Establecer formato de las fechas a introducir: dd/mm/aaaa
+ 
+ formato = "%Y-%m-%d"
+ 
+ # Bucle 'sin fin' 
+ 
+ while True:
+  try:
+   # Introducir fecha inicial utilizando el formato definido
+   
+   fecha_desde = i
+   
+   # Si no se introduce ningún valor se fuerza el final del bucle 
+   
+   if fecha_desde == "":
+    break
+   
+   # Introducir fecha final utilizando el formato definido   
+   
+   fecha_hasta = f 
+
+   # Si no se introduce ningún valor se fuerza el final del bucle 
+   
+   if fecha_hasta == "":
+    break
+   
+   # Se evaluan las fechas según el formato dd/mm/aaaa
+   # En caso de introducirse fechas incorrectas se capturará
+   # la excepción o error
+   
+   fecha_desde = datetime.strptime(fecha_desde, formato)
+   fecha_hasta = datetime.strptime(fecha_hasta, formato)
+   
+   # Se comprueba que fecha_hasta sea mayor o igual que fecha_desde
+   
+   if fecha_hasta >= fecha_desde:
+    
+    # Se cálcula diferencia en día y se muestra el resultado
+    
+    return True
+    
+   else:
+    return ("La fecha fecha final debe ser mayor o igual que la inicial")
+   
+  except:
+   return('Error en la/s fecha/s. ¡Inténtalo de nuevo!')
+
 import psycopg2
 # Importamos la Base de Datos
 conn = psycopg2.connect(host="201.238.213.114",database="grupo18", user="grupo18", password="BQtmLl", port ="54321")
@@ -335,95 +389,97 @@ while (login):
                               
                               #agregar campaña
                               if campagna == 1: 
-                                c2 = input("Ingrese fecha inicio campaña (ej: '2019-09-30'):   ")
-                                c3 = input("Ingrese fecha fin campaña (ej: '2019-10-12'):   ")
-                                cur5 = conn.cursor()
-                                cur5.execute("INSERT INTO campagna(inicio,fin,id_tennant) VALUES('{}','{}',{});".format(c2,c3,tennant))
-                                conn.commit()
-                                cur5.close()
-                                break 
-                              
-                              ingresar = True 
-                              while (ingresar):
-                                  c1 = input("Ingrese id_campaña que quiere editar o eliminar:  ")
-                                  if (Is_int(c1)):
-                                      c1 = int(c1)
-                                      j=0
-                                      for i in campagnas:
-                                          if i[0] == c1:
-                                              ingresar = False 
-                                          else:
-                                              if j == len(campagnas)-1:
-                                                  print ()
-                                                  print('Opcion invalida, ingrese opcion nuevamente')     
-                                          j+= 1
+                                  o=True
+                                  while (o):
+                                      fecha_desde = input('Introducir fecha inicial (aaaa-mm-dd): ')
+                                      fecha_hasta = input('Introducir fecha final   (aaaa-mm-dd): ') 
+                                        
+                                      fechas = main(fecha_desde,fecha_hasta)
+                                      if (fechas):
+                                            cur5 = conn.cursor()
+                                            cur5.execute("INSERT INTO campagna(inicio,fin,id_tennant) VALUES('{}','{}',{});".format(fecha_desde,fecha_hasta,tennant))
+                                            conn.commit()
+                                            cur5.close()
+                                            o=False 
+                                            intresar = False
+                                            o3 = False
+                                            break
+                                      else: 
+                                          print(fechas)
+                                      
                                         
                               #eliminar campaña
                               if campagna == 2:
-                                cur5 = conn.cursor()
-                                cur5.execute("DELETE FROM campagna WHERE id_campagna = {};".format(c1))
-                                conn.commit()
-                                cur5.close()
-                                break
+                                  ingresar = True 
+                                  while (ingresar):
+                                      c1 = input("Ingrese id_campaña que quiere editar o eliminar:  ")
+                                      if (Is_int(c1)):
+                                          c1 = int(c1)
+                                          if c1 in campagnas[0]:
+                                              o = True
+                                              while (o):
+                                                  eliminar1 = input('''Esta seguro que desea eliminar la calificacion?
+                                                                   
+                                                                      si (1)                       no (2)          
+                                                  ''')
+                                                  if (eliminar1 == '1'):
+                                                        cur5 = conn.cursor()
+                                                        cur5.execute("DELETE FROM campagna WHERE id_campagna = {};".format(c1))
+                                                        conn.commit()
+                                                        cur5.close()
+                                                        break
+                                                        o = False
+                                                        intresar = False
+                                                        o3 = False
+                                                        break
+                                                  elif (eliminar1 == '2'):
+                                                      break 
+                                                  else:
+                                                      print ('Ingrese una opcion válida.')
+                                                      o=False 
+                                          else: 
+                                                 print('Ingrese una Campaña del Tennant {}'.format(tennant))
+                                      else: 
+                                          print('Ingrese un numero valido')
+                                         
+                               
                               #editar campaña
                               elif campagna == 3:
-                                    print()
-                                    ed5 = input('''
-                                        ---== Editor de Campañas ==---
-                                        [1] Editar id_campaña
-                                        [2] Editar fecha inicio campaña
-                                        [3] Editar fecha fin campaña
-                                        [4] Editar id_tennant
-                                        [5] Volver Menu Opciones
-                                        [6] Salir de CrossNot
-                                        
-                                            
-                                        Ingrese una opcion [1-6]:   ''')
-                                    if (Is_int(ed5)):
-                                        llamada = int(ed5)
-                                        #Editar id_campaña
-                                        if ed5 == 1:
-                                            ed5n = int(input("Ingrese nuevo id_campaña:  "))
-                                            cur5 = conn.cursor()
-                                            cur5.execute("UPDATE campagna SET id_campagna = {} WHERE id_campagna = {};".format(ed5n,c1))
-                                            conn.commit()
-                                            cur5.close()
-                                            break
-                                        #Editar fecha inicio campaña
-                                        elif ed5 == 2:
-                                            ed5n = input("Ingrese nueva fecha inicio(ej: '2019-09-30'):  ")
-                                            cur5 = conn.cursor()
-                                            cur5.execute("UPDATE campagna SET inicio = {} WHERE id_campagna = {};".format(ed5n,c1))
-                                            conn.commit()
-                                            cur5.close()
-                                            break
-                                        #Editar fecha fin campaña
-                                        elif ed5 == 3:
-                                            ed5n = input("Ingrese nueva fecha fin (ej: '2019-10-12'):  ")
-                                            cur5 = conn.cursor()
-                                            cur5.execute("UPDATE campagna SET fin = {} WHERE id_campagna = {};".format(ed5n,c1))
-                                            conn.commit()
-                                            cur5.close()
-                                            break
-                                        #Editar id_tennant
-                                        elif ed5 == 4:
-                                            ed5n = int(input("Ingrese nuevo id_tennant:  "))
-                                            cur5 = conn.cursor()
-                                            cur5.execute("UPDATE campagna SET id_tennant = {} WHERE id_campagna = {};".format(ed5n,c1))
-                                            conn.commit()
-                                            cur5.close() 
-                                        #Volver Menu Opciones
-                                        elif ed5 == 5:
-                                            break 
-                                        #Salir de CrossNot
-                                        elif ed5 == 6 :
-                                            print()
-                                            print("Gracias por utilizar CrossNot")
-                                            menu = False
-                                            login = False
-                                            conn.close()  
-                                            break 
-                                    
+                                  ingresar = True 
+                                  while (ingresar):
+                                      c1 = input("Ingrese id_campaña que quiere editar:  ")
+                                      if (Is_int(c1)):
+                                          c1 = int(c1)
+                                          if c1 in campagnas[0]:
+                                              o = True
+                                              while (o):
+                                                  fecha_desde = input('Introducir fecha inicial (aaaa-mm-dd): ')
+                                                  fecha_hasta = input('Introducir fecha final   (aaaa-mm-dd): ') 
+                                                    
+                                                  fechas = main(fecha_desde,fecha_hasta)
+                                                  if (fechas):
+                                                       cur5 = conn.cursor()
+                                                       cur5.execute("UPDATE campagna SET inicio = '{}' WHERE id_campagna = {};".format(fecha_desde,c1))
+                                                       conn.commit()
+                                                       cur5.close()
+                                                       
+                                                       cur = conn.cursor()
+                                                       cur.execute("UPDATE campagna SET fin = '{}' WHERE id_campagna = {};".format(fecha_hasta,c1))
+                                                       conn.commit()
+                                                       cur.close()
+                                                       
+                                                       o = False
+                                                       ingresar = False
+                                                       break
+                                                  else:
+                                                       print(fechas)
+                                                
+                                          else: 
+                                                 print('Ingrese una Campaña del Tennant {}'.format(tennant))
+                                      else: 
+                                          print('Ingrese un numero valido')
+                                                  
+                                          
                               #Volver Menu Opciones
                               elif campagna == 4:  
                                 o3 = False
@@ -437,6 +493,8 @@ while (login):
                                 break 
                           else: 
                               print('Ingrese opcion valida')
+                      else: 
+                          print('Ingrese numero valido')
                                 
                 
               elif mp == 4: 
@@ -576,6 +634,8 @@ while (login):
                                                       print('{}'.format(a2[g][0]))
                                                       llamadas_tennant.append(a2[g][0])
                                                       g+=1 
+                                                      
+                                                      
                                                      
                                           elif tip == 3: 
                                               eliminar = True
