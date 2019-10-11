@@ -467,7 +467,7 @@ while (login):
                                                        cur.execute("UPDATE campagna SET fin = '{}' WHERE id_campagna = {};".format(fecha_hasta,c1))
                                                        conn.commit()
                                                        cur.close()
-                                                       
+                                                      
                                                        o = False
                                                        ingresar = False
                                                        break
@@ -669,8 +669,79 @@ while (login):
                                                   else: 
                                                       print('Ingrese un numero porfavor')
                                                      
-                                                  
-                                          if tip == 5:
+                                          elif tip == 4:
+                                              edit_aso = True 
+                                              while (edit_aso):
+                                                  elegir_tipi = input('Ingrese id_tipificacion que desea editar:   ')
+                                                  if (Is_int(elegir_tipi)):
+                                                      elegir_tipi = int(elegir_tipi)
+                                                      if elegir_tipi in id_tipi_campa:
+                                                          o = True 
+                                                          while (o): 
+                                                              edit_valor = input("Ingrese nuevo dato de la tipificacion {}:   ".format(elegir_tipi))
+                                                              if (Is_str(edit_valor)):
+                                                                  edit_valor=str(edit_valor)
+                                                                  print(edit_valor)
+                                                                  cur5 = conn.cursor()
+                                                                  cur5.execute("UPDATE tipificacion SET dato = '{}' WHERE id_tipificacion = {};".format(edit_valor,elegir_tipi))
+                                                                  conn.commit()
+                                                                  cur5.close()
+                                                              
+                                                                  query1 = '''SELECT d.id_tipificaciondato, d.valor, t.dato 
+                                                                            FROM tipificacion_dato d JOIN  tipificacion t on t.id_tipificacion = d.id_tipificacion
+                                                                            WHERE d.id_tipificacion = {}
+                                                                            order by id_tipificaciondato'''.format(elegir_tipi)
+                                                                  loc2 = conn.cursor()
+                                                                  loc2.execute(query1)
+                                                                  a2 = loc2.fetchall()
+                                                                  loc2.close()
+                                                                  datos_camp_tipi = []
+                                
+                                                                  print ("Tabla valores a editar")
+                                                                  print ('Id_tipificaciondato   |   Valor')
+                                                                  
+                                                                  i = 0
+                                                                  while i < len(a2):
+                                                                      b = []
+                                                                      b.append(a2[i][0])
+                                                                      b.append(a2[i][1])
+                                                                      b.append(a2[i][2])
+                                                                      print ('{}    |   {}'.format(a2[i][0],a2[i][2]))
+                                                                      datos_camp_tipi.append(b)
+                                                                      i+=1  
+                                                                      
+                                                                  id_dato_camp =[]
+                                                                  g = 0
+                                                                  while g < len(a2):
+                                                                      id_dato_camp.append(a2[g][0])
+                                                                      g+=1 
+                                                                      
+                                                                  j=0
+                                                                  for i in id_dato_camp:
+                                                                      val = datos_camp_tipi[1][2]
+                                                                      valor = input("Ingrese nuevo valor de {} para la tipificacion_dato {}:   ".format(val,i))
+                                                                      cur5 = conn.cursor()
+                                                                      cur5.execute("UPDATE tipificacion_dato SET valor = '{}' WHERE id_tipificaciondato = {};".format(valor,i))
+                                                                      conn.commit()
+                                                                      cur5.close()
+
+                                                                      if j == len(id_dato_camp)-1:
+                                                                            
+                                                                            o= False
+                                                                            edit_aso=False
+                                                                            ct = False
+                                                                            o4 = False 
+                                                                            break
+                                                                      j+=1
+                                                                      
+                                                              else:
+                                                                 print('Ingrese un numero porfavor') 
+                                                      else: 
+                                                          print('Ingrese una tipificacion de la campaña {}'.format(select_campagna))
+                                                  else: 
+                                                      print('Ingrese un numero porfavor')
+                                              
+                                          elif tip == 5:
                                               edit_aso = True 
                                               while (edit_aso):
                                                   elegir_tipi = input('Ingrese id_tipificacion que desea editar:   ')
@@ -737,11 +808,14 @@ while (login):
                                               
                                           #Volver Menu Opciones
                                           if tip == 6:  
+                                            ct = False
                                             o4 = False
                                           #Salir de CrossNot
                                           elif tip == 7:
                                             print()
                                             print("Gracias por utilizar CrossNot")
+                                            ct = False
+                                            o4 = False
                                             menu = False
                                             login = False
                                             conn.close()  
