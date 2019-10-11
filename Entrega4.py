@@ -665,13 +665,19 @@ while (login):
                       print ('{}     '.format(a[i][0]))
                       campagnas4.append(b)
                       i+=1
-
+                      
+                  ids_campagnas=[]
+                  q = 0
+                  while q < len(a):
+                      ids_campagnas.append((a[q][0]))
+                      q+=1
+                  print (ids_campagnas)
                   o4 = True 
                   while (o4):
                        select_campagna = input('Seleccione Id_Campaña:    ')
                        if (Is_int(select_campagna)):
                           select_campagna = int(select_campagna) 
-                          if select_campagna in campagnas4[0]:
+                          if select_campagna in ids_campagnas:
                               ct = True
                               while (ct):
                                   query = '''SELECT c.id_campagna, c.id_tipificacion, t.dato
@@ -755,6 +761,7 @@ while (login):
                                                       break
                                                   else:
                                                       print('Ingrese opcion valida')
+                                                      
                                           elif tip ==2:
                                               acociar = True
                                               while(acociar):
@@ -776,7 +783,85 @@ while (login):
                                                       print('{}'.format(a2[g][0]))
                                                       llamadas_tennant.append(a2[g][0])
                                                       g+=1 
-                                                  
+                                                      
+                                                  edit_aso = True 
+                                                  while (edit_aso):
+                                                      elegir_tipi = input('Ingrese id_tipificacion que desea editar:   ')
+                                                      if (Is_int(elegir_tipi)):
+                                                          elegir_tipi = int(elegir_tipi)
+                                                          if elegir_tipi in id_tipi_campa:
+                                                              select = True
+                                                              while (select): 
+                                                                  select_llamada = input('Ingrese id_llamada que quiere editar:   ')
+                                                                  if (Is_int(select_llamada)):
+                                                                      if select_llamada in llamadas_tennant:
+                                                                          query1 = '''select dato 
+                                                                                    from tipificacion 
+                                                                                    where id_tipificacion = {}'''.format(elegir_tipi)
+                                                                          loc2 = conn.cursor()
+                                                                          loc2.execute(query1)
+                                                                          a2 = loc2.fetchall()
+                                                                          loc2.close()
+                                                                          datoo = []
+                                                                
+                                                                          g = 0
+                                                                          while g < len(a2):
+                                                                              print('{}'.format(a2[g][0]))
+                                                                              datoo.append(a2[g][0])
+                                                                              g+=1 
+                                                                          print('datoo',datoo[0])
+                                                                          val = input('Ingrese valor de la tipificacion ({}) que desea agregar:   '.format(datoo[0]))
+                                                                          
+                                                                          '''cur2= conn.cursor()
+                                                                          cur2.execute("INSERT INTO tipificacion_dato(id_llamada,id_tipificacion,valor) VALUES({},{},'{}');".format(select_campagna,elegir_tipi,val))
+                                                                          conn.commit()
+                                                                          cur2.close()
+                                                                          
+                                                                          cur5 = conn.cursor()
+                                                                          cur5.execute("UPDATE llamada SET entrada_salida = 1 WHERE id_llamada = {};".format(select_llamada))
+                                                                          conn.commit()
+                                                                          cur5.close()'''
+                                                                          
+                                                                          query1 = '''select inicio
+                                                                                    from campagna
+                                                                                    where id_campagna = {}'''.format(select_campagna)
+                                                                          loc2 = conn.cursor()
+                                                                          loc2.execute(query1)
+                                                                          a2 = loc2.fetchall()
+                                                                          loc2.close()
+                                                                          fechai = []
+                                                                
+                                                                          g = 0
+                                                                          while g < len(a2):
+                                                                              print('{}'.format(a2[g][0]))
+                                                                              fechai.append(a2[g][0])
+                                                                              g+=1 
+                                                                          print('fechai',fechai[0])
+                                                                          '''cur = conn.cursor()
+                                                                          cur.execute("UPDATE llamada SET fecha = '{}' WHERE id_llamada = {};".format(fechai[0],select_llamada))
+                                                                          conn.commit()
+                                                                          cur.close()'''
+                                                                          
+                                                                          select =False 
+                                                                          edit_aso=False
+                                                                          acociar=False
+                                                                          ct = False
+                                                                          o4=False
+                                                                          break 
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                  else: 
+                                                                      print('Ingrese numero valido')
+                                                          else: 
+                                                              print('Ingrese una tipificacion de la campaña {}'.format(select_campagna))
+                                                      else: 
+                                                          print('Ingrese numero valido')
+                                                          
                                                   
                                                       
                                                       
@@ -825,7 +910,7 @@ while (login):
                                                               edit_valor = input("Ingrese nuevo dato de la tipificacion {}:   ".format(elegir_tipi))
                                                               if (Is_str(edit_valor)):
                                                                   edit_valor=str(edit_valor)
-                                                                  print(edit_valor)
+                                                                  
                                                                   cur5 = conn.cursor()
                                                                   cur5.execute("UPDATE tipificacion SET dato = '{}' WHERE id_tipificacion = {};".format(edit_valor,elegir_tipi))
                                                                   conn.commit()
