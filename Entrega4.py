@@ -4,6 +4,7 @@ Created on Mon Sep 30 11:30:29 2019
 
 @author: Ignacio Mayer
 """
+from datetime import datetime
 
 #funcion IS_INT me ayda a determinar si es o no un valor numerico. me inspiro en la funcion de c#
 
@@ -21,12 +22,9 @@ def Is_str(x):
     except:
         return True
 
-from datetime import datetime
-
-from datetime import datetime
-
-
 #funcion sacada de la pagina https://python-para-impacientes.blogspot.com/2014/02/operaciones-con-fechas-y-horas.html
+#esta funcion me ayuda a saber si es una fecha correcta 
+        
 def main(i,f):
  # Establecer formato de las fechas a introducir: dd/mm/aaaa
  
@@ -671,7 +669,7 @@ while (login):
                   while q < len(a):
                       ids_campagnas.append((a[q][0]))
                       q+=1
-                  print (ids_campagnas)
+               
                   o4 = True 
                   while (o4):
                        select_campagna = input('Seleccione Id_Campaña:    ')
@@ -763,37 +761,40 @@ while (login):
                                                       print('Ingrese opcion valida')
                                                       
                                           elif tip ==2:
-                                              acociar = True
-                                              while(acociar):
-                                                  query1 = '''SELECT l.id_llamada, t.id 
-                                                            FROM llamada l LEFT JOIN tipificacion_dato d ON l.id_llamada = d.id_llamada JOIN agente a on a.id_agente = l.id_agente JOIN tennant t on a.id_tennant=t.id
-                                                            where d.id_llamada IS NULL AND t.id={} '''.format(tennant)
-                                                  loc2 = conn.cursor()
-                                                  loc2.execute(query1)
-                                                  a2 = loc2.fetchall()
-                                                  loc2.close()
-                                                  llamadas_tennant = []
-                                                  print ()
-                                                  print("Lista de Llamadas sin Campañas del Tennant {} en CrossNot".format(tennant))
-                                                  print()
-                                                  print ('Id_llamada')
-    
-                                                  g = 0
-                                                  while g < len(a2):
-                                                      print('{}'.format(a2[g][0]))
-                                                      llamadas_tennant.append(a2[g][0])
-                                                      g+=1 
-                                                      
+                                                 
                                                   edit_aso = True 
                                                   while (edit_aso):
+                                                      
                                                       elegir_tipi = input('Ingrese id_tipificacion que desea editar:   ')
                                                       if (Is_int(elegir_tipi)):
                                                           elegir_tipi = int(elegir_tipi)
                                                           if elegir_tipi in id_tipi_campa:
-                                                              select = True
-                                                              while (select): 
+                                                              query1 = '''SELECT l.id_llamada, t.id 
+                                                                        FROM llamada l LEFT JOIN tipificacion_dato d ON l.id_llamada = d.id_llamada JOIN agente a on a.id_agente = l.id_agente JOIN tennant t on a.id_tennant=t.id
+                                                                        where d.id_llamada IS NULL AND t.id={} '''.format(tennant)
+                                                              loc2 = conn.cursor()
+                                                              loc2.execute(query1)
+                                                              a2 = loc2.fetchall()
+                                                              loc2.close()
+                                                              llamadas_tennant = []
+                                                              print ()
+                                                              print("Lista de Llamadas sin Campañas del Tennant {} en CrossNot".format(tennant))
+                                                              print()
+                                                              print ('Id_llamada')
+                
+                                                              g = 0
+                                                              while g < len(a2):
+                                                                  print('{}'.format(a2[g][0]))
+                                                                  llamadas_tennant.append(a2[g][0])
+                                                                  g+=1 
+                  
+                                                              sel = True
+                                                              while (sel): 
+                                                                  
                                                                   select_llamada = input('Ingrese id_llamada que quiere editar:   ')
                                                                   if (Is_int(select_llamada)):
+                                                                      select_llamada = int(select_llamada)
+                                                                      
                                                                       if select_llamada in llamadas_tennant:
                                                                           query1 = '''select dato 
                                                                                     from tipificacion 
@@ -806,13 +807,13 @@ while (login):
                                                                 
                                                                           g = 0
                                                                           while g < len(a2):
-                                                                              print('{}'.format(a2[g][0]))
                                                                               datoo.append(a2[g][0])
                                                                               g+=1 
-                                                                          print('datoo',datoo[0])
+                                                                              
+                                                                        
                                                                           val = input('Ingrese valor de la tipificacion ({}) que desea agregar:   '.format(datoo[0]))
                                                                           
-                                                                          '''cur2= conn.cursor()
+                                                                          cur2= conn.cursor()
                                                                           cur2.execute("INSERT INTO tipificacion_dato(id_llamada,id_tipificacion,valor) VALUES({},{},'{}');".format(select_campagna,elegir_tipi,val))
                                                                           conn.commit()
                                                                           cur2.close()
@@ -820,7 +821,7 @@ while (login):
                                                                           cur5 = conn.cursor()
                                                                           cur5.execute("UPDATE llamada SET entrada_salida = 1 WHERE id_llamada = {};".format(select_llamada))
                                                                           conn.commit()
-                                                                          cur5.close()'''
+                                                                          cur5.close()
                                                                           
                                                                           query1 = '''select inicio
                                                                                     from campagna
@@ -833,29 +834,25 @@ while (login):
                                                                 
                                                                           g = 0
                                                                           while g < len(a2):
-                                                                              print('{}'.format(a2[g][0]))
                                                                               fechai.append(a2[g][0])
                                                                               g+=1 
-                                                                          print('fechai',fechai[0])
-                                                                          '''cur = conn.cursor()
+                                                                         
+                                                                          cur = conn.cursor()
                                                                           cur.execute("UPDATE llamada SET fecha = '{}' WHERE id_llamada = {};".format(fechai[0],select_llamada))
                                                                           conn.commit()
-                                                                          cur.close()'''
+                                                                          cur.close()
                                                                           
-                                                                          select =False 
+                                                                          sel =False 
                                                                           edit_aso=False
-                                                                          acociar=False
                                                                           ct = False
-                                                                          o4=False
+                                                                          o4 = False
+                                                                          conn.close()
                                                                           break 
+         
                                                                           
-                                                                          
-                                                                          
-                                                                          
-                                                                          
-                                                                          
-                                                                          
-                                                                  else: 
+                                                                      else: 
+                                                                        print('Ingrese llamada sin asociacion')
+                                                                  else:
                                                                       print('Ingrese numero valido')
                                                           else: 
                                                               print('Ingrese una tipificacion de la campaña {}'.format(select_campagna))
