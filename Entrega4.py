@@ -152,6 +152,34 @@ while (login):
               if mp == 1:
                   o1 = True 
                   while (o1):
+                      query = 'SELECT id_llamada FROM llamada;'
+                      loc = conn.cursor()
+                      loc.execute(query)
+                      a = loc.fetchall()
+                      loc.close()
+                      llamadas = []
+                      i = 0
+                      while i < len(a):
+                          llamadas.append(a[i][0])
+                          i+=1
+                      
+                      #mostrar todas las llamadas
+                      query= "SELECT l.id_llamada, l.ubicacion_archivo, l.fecha, l.duracion, l.transcripcion, l.aprobacion, l.entrada_salida, l.rut_cliente, l.id_agente, l.id_supervisor FROM llamada l ORDER BY l.id_llamada;"
+                      loc = conn.cursor()
+                      loc.execute(query)
+                      a = loc.fetchall()
+                      loc.close()
+                      l_clasificadas = [] #id de llamadas ya clasificadas
+                      print ()
+                      print("Lista de llamadas")
+                      print('id_llamada | ubicacion | fecha | duracion | transcripcion | aprovacion | entrada(0) salida(1) | rut_cliente | id_agente | id_supervisor')
+                  
+                      i = 0
+                      while i < len(a):
+                          print('     {}     |      {}     |      {}     |      {}     |      {}     |      {}     |      {}      |      {}     |      {}      |      {}     '.format(a[i][0],a[i][1], a[i][2],a[i][3],a[i][4], a[i][5],a[i][6],a[i][7], a[i][8],a[i][9]))
+                          l_clasificadas.append(a[i][0])
+                          i+=1
+
                       llamada = input('''
                          ---== Ver Llamadas ==---
                          [1] Ver Llamada
@@ -162,8 +190,123 @@ while (login):
                          [6] Salir de CrossNot
                             
                          Ingrese una opcion [1-6]:   ''')
+
                       if (Is_int(llamada)):
                           llamada = int(llamada)
+                          #Mostrar la llamada elegida        
+                          if llamada == 1:
+                              comprobar = True
+                              while(comprobar):
+                                  idllamada = input('Ingrese su Id de la llamada: ')
+                                  if (Is_int(idllamada)):
+                                      idllamada = int(idllamada)
+                                      if idllamada in llamadas:
+                                          query = 'SELECT l.id_llamada, l.ubicacion_archivo, l.fecha, l.duracion, l.transcripcion, l.aprobacion, l.entrada_salida, l.rut_cliente, l.id_agente, l.id_supervisor FROM llamada l ORDER BY l.id_llamada;'
+                                          loc = conn.cursor()
+                                          loc.execute(query)
+                                          a = loc.fetchall()
+                                          loc.close()
+                                          print ()
+                                          print("Lista de llamadas {}".format(llamada))
+                                          print('id_llamada | ubicacion | fecha | duracion | transcripcion | aprovacion | entrada(0) salida(1) | rut_cliente | id_agente | id_supervisor')
+                                      
+                                          i = idllamada-1
+                                          for i in a:
+                                              if int(i[0]) == int(idllamada):
+                                                comprobar = False
+                                                print('     {}     |      {}     |      {}     |      {}     |      {}     |      {}     |      {}      |      {}     |      {}      |      {}     '.format(i[0],i[1], i[2],i[3],i[4], i[5],i[6],i[7], i[8],i[9]))
+                                      else:    
+                                          print('''
+                                                ERROR: Este id de supervisor no pertenece a las llamada {}
+                                          '''.format(tennant))
+                          if llamada == 2:
+                            cur2 = conn.cursor()
+                            cur2.execute("SELECT id_agente FROM agente")
+                            agentes2 = cur2.fetchall()
+                            cur2.execute("SELECT rut FROM cliente")
+                            clientes2 = cur2.fetchall()
+                            cur2.close()
+                            print ("Lista ID Agentes:")
+                            for i in agentes2:
+                              print(i)
+                            print ("Lista Rut clientes:")
+                            for j in clientes2:
+                              print(j)
+                            i1 = input("ID Agente: ")
+                            i2 = input("Rut Cliente: ")
+                            i3 = input("Fecha: ")
+                            i4 = input("Duracion: ")
+                            i5 = input("Aprobacion[si/no]: ")
+                            i6 = input("Entrada[0]/Salida[1]: ")
+                            i7 = input("Ubicacion Archivo")
+                            i8 = input("Transcripcion:")
+                            i9 = input("ID Supervisor")
+                            cur2 = conn.cursor()
+                            cur2.execute("INSERT INTO llamada(ubicacion_archivo,fecha,duracion,transcripcion,aprobacion,entrada_salida,rut_cliente,id_agente,id_supervisor) VALUES('{6}','{2}','{3}','{7}','{4}','{5}','{1}','{0}','{8}');".format(i1, i2, i3, i4, i5, i6, i7, i8, i9))
+                            conn.commit()
+                            cur2.close()
+
+
+                          if llamada == 3:
+                              l = input('Ingrese el id de la llamada para la cual quiere editar sus datos: ')
+                              if Is_int(l):
+                                id1 = int(l)
+                                cat7 = int(input('''
+                                  ---== Que campo desea modificar  ==---
+                                  [1] Ubicacion de archivo
+                                  [2] Fecha
+                                  [3] Duracion
+                                  [4] Transcripcion
+                                  [5] Aprobacion
+                                  [6] Entrada/Salida
+                                  [7] Rut cliente
+                                  [8] ID agente
+                                  [9] ID supervisor
+                                      
+                                  Ingrese una opcion [1-9]:   '''))
+                                cur1 = conn.cursor()
+                                if cat7 == 1:
+                                  x = input("Nueva ubicacion de archivo: ")
+                                  cur1.execute("UPDATE supervisor s SET ubicacion_archivo = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 2:
+                                  x = input("Nueva fecha: ")
+                                  cur1.execute("UPDATE supervisor SET fecha = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 3:
+                                  x = input("Nueva duracion: ")
+                                  cur1.execute("UPDATE supervisor s SET duracion = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 4:
+                                  x = input("Nueva transcripcion: ")
+                                  cur1.execute("UPDATE supervisor SET transcripcion = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 5:
+                                  x = input("Nuevo aprobacion[Si/No]: ")
+                                  cur1.execute("UPDATE supervisor s SET aprobacion = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 6:
+                                  x = input("Si es Entrada[0] o Salida[1]: ")
+                                  cur1.execute("UPDATE supervisor SET entrada_salida = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 7:
+                                  x = input("Nuevo rut cliente: ")
+                                  cur1.execute("UPDATE supervisor s SET rut_cliente = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 8:
+                                  x = input("Nuevo ID agente: ")
+                                  cur1.execute("UPDATE supervisor SET id_agente = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                if cat7 == 9:
+                                  x = input("Nuevo ID del supervisor: ")
+                                  cur1.execute("UPDATE supervisor SET id_supervisor = '{}' WHERE id_llamada = '{}';".format(x, id1))
+                                conn.commit()
+                                cur1.close()
+
+                          if llamada == 4:
+                            l1 = int(input("Indique ID de llamada que quere eliminar: "))
+                            cur7 = conn.cursor()
+                            cur7.execute("SELECT * FROM llamada WHERE id_llamada = '{}'".format(l1))
+                            ten7 = cur7.fetchall()
+                            print("Estas seguro que quieres eliminar la siguiente llamada?\n", ten7[0], )
+                            sure = input("[1: Si]\n[2: No]\n---> ")
+                            if sure == '1':
+                              cur7.execute("DELETE FROM llamada WHERE id_llamada = {};".format(ten7[0][0]))
+                              conn.commit()
+                            cur7.close()
+                              
                           #Volver Menu Opciones
                           if llamada == 5:  
                             o1 = False
@@ -174,7 +317,8 @@ while (login):
                             menu = False
                             login = False
                             conn.close()  
-                            break    
+                            break 
+       
                      
                       
                     
@@ -614,18 +758,16 @@ while (login):
                                           elif tip ==2:
                                               acociar = True
                                               while(acociar):
-                                                  query1 = '''SELECT l.id_llamada
-                                                            FROM llamada l JOIN agente a on l.id_agente = a.id_agente JOIN tennant t on t.id=a.id_tennant
-                                                            WHERE t.id = {}
-                                                            GROUP BY l.id_llamada
-                                                            ORDER BY l.id_llamada'''.format(tennant)
+                                                  query1 = '''SELECT l.id_llamada, t.id 
+                                                            FROM llamada l LEFT JOIN tipificacion_dato d ON l.id_llamada = d.id_llamada JOIN agente a on a.id_agente = l.id_agente JOIN tennant t on a.id_tennant=t.id
+                                                            where d.id_llamada IS NULL AND t.id={} '''.format(tennant)
                                                   loc2 = conn.cursor()
                                                   loc2.execute(query1)
                                                   a2 = loc2.fetchall()
                                                   loc2.close()
                                                   llamadas_tennant = []
                                                   print ()
-                                                  print("Lista de Llamadas del Tennant {} en CrossNot".format(tennant))
+                                                  print("Lista de Llamadas sin Campañas del Tennant {} en CrossNot".format(tennant))
                                                   print()
                                                   print ('Id_llamada')
     
@@ -634,6 +776,8 @@ while (login):
                                                       print('{}'.format(a2[g][0]))
                                                       llamadas_tennant.append(a2[g][0])
                                                       g+=1 
+                                                  
+                                                  
                                                       
                                                       
                                                      
@@ -1112,6 +1256,14 @@ while (login):
               elif mp == 7:
                   o7 = True 
                   while (o7):
+                      query= 'SELECT * FROM tennant;'
+                      loc = conn.cursor()
+                      loc.execute(query)
+                      tens = loc.fetchall()
+                      loc.close() 
+                      print("\t\t\tLa lista de tennants actuales es: ") 
+                      for i in tens:
+                          print("\t\t\t", i)
                       tennant1 = input('''
                          ---== Manejar tennants   ==---
                          [1] Agregar tennant
@@ -1122,12 +1274,60 @@ while (login):
                             
                          Ingrese una opcion [1-5]:   ''')
                       if (Is_int(tennant1)):
-                          tennant1 = int(tennant1)        
-                          #Volver Menu Opciones
-                          if tennant1 == 4:  
+                        tennant1 = int(tennant1)
+                        # Agrega tennant 
+                        if tennant1 == 1:
+                            tel = input("Indique el número de telefono: ")
+                            cur7 = conn.cursor()
+                            cur7.execute("INSERT INTO tennant(telefono) VALUES({});".format(tel))
+                            conn.commit()
+                            cur7.close()
+                        # Modifica tennant
+                        if tennant1 == 2:
+                            tenn = input("Indique ID del tennant: ")
+                            if Is_int(tenn):
+                              if 0 < int(tenn) < len(tens):
+                                cur7 = conn.cursor()
+                                cur7.execute("SELECT * FROM tennant t FULL JOIN supervisor s ON t.id = s.id_tennant WHERE t.id = {}".format(tenn))
+                                ten7 = cur7.fetchall()
+                                print("ID supervisor|nombre supervisor|Apellido supervisor")
+                                for j in ten7:
+                                  print("{}   |   {}   |   {}".format(j[2], j[3], j[4]))
+                                print("")
+                                cur7.close()
+                                id7 = int(input("Indique el ID del supersor que quiere modificar: "))
+                                cat7 = int(input('''
+                                  ---== Que campo desea modificar  ==---
+                                  [1] Nombre
+                                  [2] Apellido
+                                      
+                                  Ingrese una opcion [1-2]:   '''))
+                                cur7 = conn.cursor()
+                                if cat7 == 1:
+                                  name7 = input("Nuevo nombre: ")
+                                  cur7.execute("UPDATE supervisor s SET nombre = '{}' WHERE id_supervisor = '{}';".format(name7, id7))
+                                if cat7 == 2:
+                                  name7 = input("Nuevo apellido: ")
+                                  cur7.execute("UPDATE supervisor SET apellido = '{}' WHERE id_supervisor = '{}';".format(name7, id7))
+                                conn.commit()
+                                cur7.close()
+                        # Elimina tennant
+                        if tennant1 == 3:
+                            tenn = int(input("Indique ID del tennant que quere eliminar: "))
+                            cur7 = conn.cursor()
+                            cur7.execute("SELECT * FROM tennant WHERE id = '{}'".format(tenn))
+                            ten7 = cur7.fetchall()
+                            print("Estas seguro que quieres eliminar el siguiente tennant?\n", ten7[0], )
+                            sure = input("[1: Si]\n[2: No]\n---> ")
+                            if sure == '1':
+                              cur7.execute("DELETE FROM tennant WHERE id = {};".format(ten7[0][0]))
+                              conn.commit()
+                            cur7.close()
+                        # Volver Menu Opciones
+                        if tennant1 == 4:  
                             o7 = False
                           #Salir de CrossNot
-                          elif tennant1 == 5:
+                        elif tennant1 == 5:
                             print()
                             print("Gracias por utilizar CrossNot")
                             menu = False
