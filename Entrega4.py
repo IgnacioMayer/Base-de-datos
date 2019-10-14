@@ -234,12 +234,16 @@ while (login):
                             cur2 = conn.cursor()
                             cur2.execute("SELECT id_supervisor FROM supervisor WHERE id_tennant = {}".format(tennant))
                             supervisor2 = cur2.fetchall()
+                            
+                            cur2 = conn.cursor()
                             cur2.execute("SELECT rut FROM cliente")
                             clientes2 = cur2.fetchall()
                             cur2.close()
+                            
                             id_agent  = []
                             id_super = []
                             id_clientes = []
+                            
                             print ("Lista ID Agentes del tennant {} :".format(tennant))
                             for i in agentes2:
                               print(i[0])
@@ -247,7 +251,7 @@ while (login):
                             print ("Lista Rut clientes:")
                             for j in clientes2:
                               print(j[0])
-                              id_clientes.append(i[0])
+                              id_clientes.append(j[0])
                             for i in supervisor2:
                                 id_super.append(i[0])
                                 
@@ -257,7 +261,6 @@ while (login):
                                 if i1 in id_agent:
                                     i2 = input("Rut Cliente: ")
                                     if (Is_int(i2)):
-                                        i2 = int(i2)
                                         if i2 in id_clientes:
                                             print("Debe ingresar la fecha de la forma 2019-11-26)")
                                             i3 = input("Fecha: ")
