@@ -5,7 +5,9 @@ Created on Mon Sep 30 11:30:29 2019
 @author: Ignacio Mayer
 """
 from datetime import datetime
-
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 #funcion IS_INT me ayda a determinar si es o no un valor numerico. me inspiro en la funcion de c#
 
 def Is_int(x):
@@ -21,6 +23,17 @@ def Is_str(x):
         return False
     except:
         return True
+    
+#https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py  
+def autolabel(rects):
+    """Attach a text label above each bar in *rects*, displaying its height."""
+    for rect in rects:
+        height = rect.get_height()
+        rect.axes.annotate('{}'.format(height),
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom')    
 
 #https://stackoverflow.com/questions/16870663/how-do-i-validate-a-date-string-format-in-python
 def validate(date_text):
@@ -152,7 +165,8 @@ while (login):
                   [5] Manejar Agentes
                   [6] Manejar Supervisores
                   [7] Manejar Tennants 
-                  [8] Salir de CrossNot 
+                  [8] Estadísticas
+                  [9] Salir de CrossNot 
                   
                   Ingrese una opcion [1-8]:   ''')
           if (Is_int(mp)):
@@ -1583,8 +1597,74 @@ while (login):
                               print('Ingrese opcion valido')  
                       else:
                           print('Ingrese numero valido')
-                      
+               
+                
+                
               elif mp == 8:
+                  t = True 
+                  while (t):
+                      e = input('''
+                         ---== Estadísticas ==---
+                         [1] Llamadas por tennant
+                         [2] Evaluaciones por tennant
+                         [3] Agentes
+                         [4] Supervisores
+                         [5] Volver Menu Opciones
+                         [6] Salir de CrossNot
+                            
+                         Ingrese una opcion [1-5]:   ''')
+                      
+                      
+                      if e == '1':
+                            cur2 = conn.cursor()
+                            cur2.execute("SELECT a.id_tennant, COUNT(*) FROM agente a NATURAL JOIN llamada l WHERE l.entrada_salida = 0 GROUP BY a.id_tennant ORDER BY a.id_tennant;")
+                            l_entrada = cur2.fetchall()
+                            cur2.execute("SELECT a.id_tennant, COUNT(*) FROM agente a NATURAL JOIN llamada l WHERE l.entrada_salida = 1 GROUP BY a.id_tennant ORDER BY a.id_tennant;")
+                            l_salida = cur2.fetchall()
+                            cur2.close()
+                           
+                            tennants = []
+                            quantity_s = []
+                            quantity_e = []
+                            for i in l_salida:
+                                tennants.append(i[0])
+                            for i in l_salida:
+                                quantity_s.append(i[1])
+                            for i in l_entrada:
+                                quantity_e.append(i[1])
+                            # Esto lo saqué de    https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py 
+                            x = np.arange(len(tennants))  # the label locations
+                            width = 0.35  # the width of the bars
+                            
+                            fig, ax = plt.subplots()
+                            rects1 = ax.bar(x - width/2, quantity_s, width, label='Entrantes')
+                            rects2 = ax.bar(x + width/2, quantity_e, width, label='Salientes')
+                            
+                            # Add some text for labels, title and custom x-axis tick labels, etc.
+                            ax.set_ylabel('Cantidad de llamadas')
+                            ax.set_title('ID del Tennant')
+                            ax.set_xticks(x)
+                            ax.set_xticklabels(tennants)
+                            ax.legend()
+                            autolabel(rects1)
+                            autolabel(rects2)
+                            
+                            fig.tight_layout()
+                            
+                            plt.show()
+                            
+                      elif e == '4':  
+                            t = False
+                          #Salir de CrossNot
+                      elif e == '5':
+                            print()
+                            print("Gracias por utilizar CrossNot")
+                            menu = False
+                            login = False
+                            conn.close()  
+                            break 
+                      
+              elif mp == 9:
                       print()
                       print("Gracias por utilizar CrossNot")
                       menu = False
