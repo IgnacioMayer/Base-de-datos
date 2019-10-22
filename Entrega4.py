@@ -1612,7 +1612,7 @@ while (login):
                          [5] Volver Menu Opciones
                          [6] Salir de CrossNot
                             
-                         Ingrese una opcion [1-5]:   ''')
+                         Ingrese una opcion [1-6]:   ''')
                       
                       
                       if e == '1':
@@ -1652,11 +1652,47 @@ while (login):
                             fig.tight_layout()
                             
                             plt.show()
+                      
+                      elif e == '2':
+                            cur2 = conn.cursor()
+                            cur2.execute("SELECT a.id_tennant, COUNT(*) FROM agente a NATURAL JOIN llamada l WHERE l.aprobacion = 1 GROUP BY a.id_tennant ORDER BY a.id_tennant;")
+                            l_aprobadas = cur2.fetchall()
+                            cur2.execute("SELECT a.id_tennant, COUNT(*) FROM agente a NATURAL JOIN llamada l WHERE l.aprobacion = 0 GROUP BY a.id_tennant ORDER BY a.id_tennant;")
+                            l_desaprobadas = cur2.fetchall()
+                            cur2.close()
+                            tennants = []
+                            quantity_a = []
+                            quantity_d = []
+                            for i in l_aprobadas:
+                                tennants.append(i[0])
+                            for i in l_aprobadas:
+                                quantity_a.append(i[1])
+                            for i in l_desaprobadas:
+                                quantity_d.append(i[1])
+                            # Esto lo saqué de    https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py 
+                            x = np.arange(len(tennants))  # the label locations
+                            width = 0.35  # the width of the bars
                             
-                      elif e == '4':  
+                            fig, ax = plt.subplots()
+                            rects1 = ax.bar(x - width/2, quantity_a, width, label='Aprobadas')
+                            rects2 = ax.bar(x + width/2, quantity_d, width, label='Desaprobadas')
+                            
+                            # Add some text for labels, title and custom x-axis tick labels, etc.
+                            ax.set_ylabel('Cantidad de llamadas')
+                            ax.set_title('ID del Tennant')
+                            ax.set_xticks(x)
+                            ax.set_xticklabels(tennants)
+                            ax.legend()
+                            autolabel(rects1)
+                            autolabel(rects2)
+                            
+                            fig.tight_layout()
+                            
+                            plt.show()  
+                      elif e == '5':  
                             t = False
                           #Salir de CrossNot
-                      elif e == '5':
+                      elif e == '6':
                             print()
                             print("Gracias por utilizar CrossNot")
                             menu = False
