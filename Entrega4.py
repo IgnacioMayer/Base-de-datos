@@ -1184,7 +1184,7 @@ while (login):
                               apellido = input("Ingrese Apellido: ").upper()
                               
                               cur5 = conn.cursor()
-                              cur5.execute("INSERT INTO agente(nombre, apellido ,id_tennant) VALUES({},{},{});".format(nombre,apellido,tennant))
+                              cur5.execute("INSERT INTO agente(nombre, apellido ,id_tennant) VALUES('{}','{}',{});".format(nombre,apellido,tennant))
                               conn.commit()
                               cur5.close()
                         
@@ -1224,14 +1224,14 @@ while (login):
                                             if ed5 == 1:
                                                 nombre = input("Ingrese nuevo nombre:  ").upper()
                                                 cur5 = conn.cursor()
-                                                cur5.execute("UPDATE agente SET nombre = {} WHERE id_agente = {};".format(nombre, edit))
+                                                cur5.execute("UPDATE agente SET nombre = '{}' WHERE id_agente = {};".format(nombre, edit))
                                                 conn.commit()
                                                 cur5.close() 
                                                 break
                                             elif ed5 == 2:
                                                 apellido = input("Ingrese nuevo apellido:  ").upper()
                                                 cur5 = conn.cursor()
-                                                cur5.execute("UPDATE agente SET apellido = {} WHERE id_agente = {};".format(apellido, edit))
+                                                cur5.execute("UPDATE agente SET apellido = '{}' WHERE id_agente = {};".format(apellido, edit))
                                                 conn.commit()
                                                 cur5.close() 
                                                 break
@@ -1309,6 +1309,7 @@ while (login):
                           print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
                           id_supervisores.append(a[i][0])
                           i+=1
+                      
                       supervisor = input('''
                          ---== Manejar supervisores  ==---
                          [1] Agregar supervisor
@@ -1320,13 +1321,38 @@ while (login):
                          Ingrese una opcion [1-5]:   ''')
                       if (Is_int(supervisor)):
                           supervisor = int(supervisor)        
+                          
                           if supervisor == 1:
-                              nombre = input("Ingrese Nombre: ").upper()
-                              apellido = input("Ingrese Apellido: ").upper()
-                              cur5 = conn.cursor()
-                              cur5.execute("INSERT INTO supervisor(nombre, apellido ,id_tennant) VALUES('{}','{}',{});".format(nombre,apellido,tennant))
-                              conn.commit()
-                              cur5.close()
+                              query = 'SELECT id_supervisor FROM supervisor ORDER BY id_supervisor'
+                              loc = conn.cursor()
+                              loc.execute(query)
+                              a = loc.fetchall()
+                              loc.close()
+                              id_supervisoresT = []
+                              j = 0
+                              print()
+                              print ('Id_supervisor existentes')
+                              while j < len(a):
+                                  print(' {} '.format(a[j][0]))
+                                  id_supervisoresT.append(a[j][0])
+                                  j+=1
+                              sup1 = True 
+                              while sup1:
+                                  id_sup = input('Ingrese id_supervisor:  ')
+                                  if (Is_int(id_sup)):
+                                      id_sup = int(id_sup)
+                                      if(id_sup not in id_supervisoresT):
+                                          nombre = input("Ingrese Nombre: ").upper()
+                                          apellido = input("Ingrese Apellido: ").upper()
+                                          cur5 = conn.cursor()
+                                          cur5.execute("INSERT INTO supervisor(id_supervisor,nombre, apellido ,id_tennant) VALUES({},'{}','{}',{});".format(id_sup,nombre,apellido,tennant))
+                                          conn.commit()
+                                          cur5.close()
+                                          sup1=False
+                                      else:
+                                          print('Ingrese id_supervisor que no este en la lista')
+                                  else:
+                                      print('Ingrese numero porfavor')
                           elif supervisor == 2:
                                 print('''
                                     ---== Editor de Supervisores ==---
@@ -1334,7 +1360,7 @@ while (login):
                                 edit = input("Ingrese el id del supervisor al cual desea editar: ")
                                 if (Is_int(edit)):
                                     edit = int(edit)
-                                    if (edit in id_agentes):
+                                    if (edit in id_supervisores):
                                         query = 'SELECT * FROM supervisor WHERE id_supervisor = {}'.format(edit)
                                         loc = conn.cursor()
                                         loc.execute(query)
@@ -1363,14 +1389,14 @@ while (login):
                                             if ed5 == 1:
                                                 nombre = input("Ingrese nuevo nombre:  ").upper()
                                                 cur5 = conn.cursor()
-                                                cur5.execute("UPDATE supervisor SET nombre = {} WHERE id_supervisor = {};".format(nombre, edit))
+                                                cur5.execute("UPDATE supervisor SET nombre = '{}' WHERE id_supervisor = {};".format(nombre, edit))
                                                 conn.commit()
                                                 cur5.close() 
                                                 break
                                             elif ed5 == 2:
                                                 apellido = input("Ingrese nuevo apellido:  ").upper()
                                                 cur5 = conn.cursor()
-                                                cur5.execute("UPDATE supervisor SET apellido = {} WHERE id_supervisor = {};".format(apellido, edit))
+                                                cur5.execute("UPDATE supervisor SET apellido = '{}' WHERE id_supervisor = {};".format(apellido, edit))
                                                 conn.commit()
                                                 cur5.close() 
                                                 break
@@ -1491,7 +1517,7 @@ while (login):
                                       tenn = int(tenn)
                                       
                                       if tenn in tens:
-                                            query1 = "SELECT s.id_supervisor, s.nombre, s.apellido FROM supervisor s JOIN tennant t on t.id = s.id_tennant where t.id={}".format(tenn)
+                                            query1 = "SELECT s.id_supervisor, s.nombre, s.apellido FROM supervisor s JOIN tennant t on t.id = s.id_tennant where t.id={} ORDER BY id_supervisor".format(tenn)
                                             loc = conn.cursor()
                                             loc.execute(query1)
                                             a = loc.fetchall()
@@ -1523,11 +1549,11 @@ while (login):
                                                         o = True
                                                         while (o):
                                                             cat7 = int(input('''
-                                                              ---== Que campo desea modificar  ==---
-                                                              [1] Nombre
-                                                              [2] Apellido
-                                                                  
-                                                              Ingrese una opcion [1-2]:   '''))
+                                      ---== Que campo desea modificar  ==---
+                                      [1] Nombre
+                                      [2] Apellido
+                                          
+                                      Ingrese una opcion [1-2]:   '''))
                                                             cur7 = conn.cursor()
                                                             if cat7 == 1:
                                                               name7 = input("Nuevo nombre: ")
