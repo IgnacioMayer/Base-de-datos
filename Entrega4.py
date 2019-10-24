@@ -186,7 +186,7 @@ while (login):
                           i+=1
                       
                       #mostrar todas las llamadas
-                      query= "SELECT l.id_llamada, l.ubicacion_archivo, l.fecha, l.duracion, l.transcripcion, l.aprobacion, l.entrada_salida, l.rut_cliente, l.id_agente, l.id_supervisor FROM llamada l NATURAL JOIN agente a WHERE a.id_tennant = {} ORDER BY l.id_llamada;".format(tennant)
+                      query= "SELECT l.id_llamada, l.ubicacion_archivo, l.fecha_inicio, l.fecha_fin, l.transcripcion, l.aprobacion, l.entrada_salida, l.rut_cliente, l.id_agente, l.id_supervisor FROM llamada l NATURAL JOIN agente a WHERE a.id_tennant = {} ORDER BY l.id_llamada;".format(tennant)
                       loc = conn.cursor()
                       loc.execute(query)
                       a = loc.fetchall()
@@ -194,7 +194,7 @@ while (login):
                       l_clasificadas = [] #id de llamadas ya clasificadas
                       print ()
                       print("Lista de llamadas")
-                      print('id_llamada | ubicacion | fecha | duracion | transcripcion | aprovacion | entrada(0) salida(1) | rut_cliente | id_agente | id_supervisor')
+                      print('id_llamada | ubicacion | fecha_inicio | fecha_fin | transcripcion | aprovacion | entrada(0) salida(1) | rut_cliente | id_agente | id_supervisor')
                   
                       i = 0
                       while i < len(a):
@@ -1689,6 +1689,97 @@ while (login):
                             fig.tight_layout()
                             
                             plt.show()  
+                      
+                      elif e == '3':
+                            query = 'SELECT id_agente FROM agente WHERE id_tennant = {}'.format(tennant)
+                            loc = conn.cursor()
+                            loc.execute(query)
+                            a = loc.fetchall()
+                            loc.close()
+                            agnt = []
+                            for i in a:
+                                agnt.append(i[0])
+                            a1 = input("Escriba id del agente: ")
+                            if (Is_int(a1)):
+                                a1 = int(a1)
+                                if (a1 in agnt):
+                                    cur2 = conn.cursor()
+                                    cur2.execute(''' 
+                                                    select EXTRACT(YEAR FROM fecha_inicio) as año, EXTRACT(MONTH FROM fecha_inicio) as mes, COUNT(*) as cantidad_llamadas
+                                                    from  llamada
+                                                    where id_agente = {} and entrada_salida = 1
+                                                    group by EXTRACT(YEAR FROM fecha_inicio), EXTRACT(MONTH FROM fecha_inicio)
+                                                    order by mes;'''.format(a1))
+                                    agente = cur2.fetchall()
+                                    cur2.close()
+                                    periodo = []
+                                    cantidad = []
+                                    for i in agente:
+                                        periodo.append('''{} {}'''.format(i[0],i[1]))
+                                        cantidad.append(i[2])
+                                    # Esto lo saqué de    https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py 
+                                    x = np.arange(len(periodo))  # the label locations
+                                    width = 0.35  # the width of the bars
+                                    
+                                    fig, ax = plt.subplots()
+                                    rects1 = ax.bar(x, cantidad, width, label='Llamadas realizadas')
+                                    
+                                    # Add some text for labels, title and custom x-axis tick labels, etc.
+                                    ax.set_ylabel('Cantidad de llamadas')
+                                    ax.set_title('Periodo')
+                                    ax.set_xticks(x)
+                                    ax.set_xticklabels(periodo)
+                                    ax.legend()
+                                    autolabel(rects1)
+                                    
+                                    fig.tight_layout()
+                                    
+                                    plt.show()      
+                                else:
+                                    print ('''Agente {} no pertenece a Tennant {}.'''.format(a1, tennant))
+                            else:
+                                print ('''Escriba números.''')
+                      elif e == '4':
+                            query = 'select count(*) from (select cast(l.fecha_inicio AS date) dia from  llamada l, supervisor s where s.id_tennant = {} group by dia order by dia) as dias;'.format(tennant)
+                            loc = conn.cursor()
+                            loc.execute(query)
+                            days_quantity = loc.fetchall()
+                            days_quantity = float(days_quantity[0][0])
+                            loc.close()
+                            
+                            query = 'select l.id_supervisor, count(*) rendimiento from llamada l natural join supervisor s where l.aprobacion is not null and s.id_tennant = {} group by id_supervisor order by id_supervisor;'.format(tennant)
+                            loc = conn.cursor()
+                            loc.execute(query)
+                            l_revisadas = loc.fetchall()
+                            loc.close()
+                            
+                            llamadas = []
+                            supervisores = []
+                            for i in l_revisadas:
+                                llamadas.append(i[1])
+                                supervisores.append(i[0])
+                                
+                            rendimientos = []
+                            for i in llamadas:
+                                rendimientos.append(round(i/days_quantity, 4))
+                            # Esto lo saqué de    https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py 
+                            x = np.arange(len(supervisores))  # the label locations
+                            width = 0.35  # the width of the bars
+                            
+                            fig, ax = plt.subplots()
+                            rects1 = ax.bar(x, rendimientos, width, label = 'Rendimientos')
+                            
+                            # Add some text for labels, title and custom x-axis tick labels, etc.
+                            ax.set_ylabel('Cantidad de llamadas revisadas por dia')
+                            ax.set_title('Supervisor')
+                            ax.set_xticks(x)
+                            ax.set_xticklabels(supervisores)
+                            ax.legend()
+                            autolabel(rects1)
+                            
+                            fig.tight_layout()
+                            
+                            plt.show()          
                       elif e == '5':  
                             t = False
                           #Salir de CrossNot
