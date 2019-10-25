@@ -873,24 +873,23 @@ while (login):
                   print ()
                   print("Lista de Campañas del Tennant {} en CrossNot".format(tennant))
                   print()
-                  print ('Id_campaña')
-                  
-                  i = 0
-                  while i < len(a):
-                      b=[]
-                      b.append(a[i][0])
-                      b.append(a[i][1])
-                      b.append(a[i][2])
-                      print ('{}     '.format(a[i][0]))
-                      campagnas4.append(b)
-                      i+=1
+                  headers = ['Id_campaña']
+                  ids_campagnas1 = []
+                  ids_campagnas = []
+                  for i in a:
                       
-                  ids_campagnas=[]
-                  q = 0
-                  while q < len(a):
-                      ids_campagnas.append((a[q][0]))
-                      q+=1
-               
+                      b = []
+                      
+                      b.append(i[0])
+                      ids_campagnas1.append(b)
+                      ids_campagnas.append(i[0])
+                      
+                      b.append(i[1])
+                      b.append(i[2])
+                      
+                      campagnas4.append(b)
+                      
+                  print(tabulate(ids_campagnas1, headers, tablefmt = "github" ))               
                   o4 = True 
                   while (o4):
                        select_campagna = input('Seleccione Id_Campaña:    ')
@@ -911,24 +910,21 @@ while (login):
                                   print ()
                                   print("Lista de Tipificaciones de la Campaña {}".format(select_campagna))
                                   print()
-                                  print ('Id_Tipificacion   |  Tipificacion (Dato)')
-                                  
-                                  i = 0
-                                  while i < len(a):
-                                      b = []
-                                      b.append(a[i][0])
-                                      b.append(a[i][1])
-                                      b.append(a[i][2])
-                                      print ('{}               |  {}   '.format(a[i][1],a[i][2]))
-                                      tipificaciones.append(b)
-                                      i+=1     
-                                      
-                                  e =0
+                                  headers = ['Id_Tipificacion', 'Tipificacion (Dato)']
                                   id_tipi_campa = []
-                                  while e < len(a):
-                                      id_tipi_campa.append((a[e][1]))
-                                      e+=1
-                             
+                                  prrint = []
+                                  for i in a:
+                                      b = []
+                                      c = []
+                                      b.append(i[0])
+                                      id_tipi_campa.append(i[0])
+                                      b.append(i[1])
+                                      b.append(i[2])
+                                      tipificaciones.append(b)
+                                      c.append(i[1])
+                                      c.append(i[2])
+                                  print(tabulate(prrint, headers, tablefmt = "github" ))
+                    
                                   tip = input('''
                      ---== Manejar Tipificaciones ==---
                      [1] Agregar tipificación
