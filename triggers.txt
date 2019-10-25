@@ -1,0 +1,57 @@
+TRIGGER 1: no permite que un agente realice/reciba mas de una llamada a la ves 
+
+CREATE FUNCTION revisar_llamada()
+RETURNS trigger 
+AS $$ 
+revisar = plpy.execute(''' 
+     SELECT *
+     FROM llamada 
+     WHERE id_agente = {}'''.format(TD['new']['id_agente']))
+
+for r in revisar:
+     if  r['fecha_inicio']<= TD['new']['fecha_inicio'] <= r['fecha_fin']:
+           return 'SKIP'
+
+minimo = TD['new']['fecha_inicio']
+for r in revisar:
+     if TD['new']['fecha_inicio'] < r['fecha_inicio']:
+          distancia =  r['fecha_inicio'] - TD['new']['fecha_inicio']
+          if distancia < minimo:
+               minimo = distancia
+if TD['new']['fecha_fin'] >= TD['new']['fecha_inicio'] + minimo:
+     return 'SKIP'
+          
+elif TD['new']['fecha_fin'] <= TD['new']['fecha_inicio']:
+     return 'SKIP' 
+else:
+     return 'OK'
+
+$$ LANGUAGE plpythonu;
+
+CREATE trigger revisar_llamada BEFORE INSERT ON llamada FOR EACH ROW EXECUTE PROCEDURE revisar_llamada();
+
+
+TRIGGER 2: no permite que una llamada nueva se asocie a una campaña expirada
+Hay que revisar en el programa que la tipificacion que se va a poner como id exista y que sus campos esten llenados
+
+CREATE FUNCTION r_campagna_llamada()
+RETURNS trigger 
+AS $$ 
+revisar1 = plpy.execute(''' 
+     SELECT l.fecha_inicio j
+     FROM llamada l NATURAL JOIN tipificacion_dato t 
+     WHERE t.id_llamada = {} ;'''.format(TD['new']['id_llamada']))
+
+revisar2 = plpy.execute(''' 
+     SELECT c.inicio i, c.fin f
+     FROM campagna c  
+     WHERE c.id_campagna = {}'''.format(TD['new']['id_campagna']))
+
+if revisar2[0]['i'] < revisar2[0]['j'] < revisar1[0]['f']:
+           return 'OK'
+
+else:
+	return 'SKIP'
+$$ LANGUAGE plpythonu;
+
+CREATE trigger r_campagna_llamada BEFORE INSERT OR UPDATE ON tipificacion_campagna FOR EACH ROW EXECUTE PROCEDURE r_campagna_llamada();  
