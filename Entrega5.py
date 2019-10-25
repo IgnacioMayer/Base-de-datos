@@ -9,7 +9,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-
+from tabulate import tabulate
 #funcion IS_INT me ayda a determinar si es o no un valor numerico. me inspiro en la funcion de c#
 
 def Is_int(x):
@@ -145,6 +145,24 @@ def hora(i,f):
    
   except:
    return('Error en la/s horas/s. ¡Inténtalo de nuevo!')
+# Funcion comprobar que fechas sean efectivamente fechas
+def main2(date_text1, date_text2):
+    try:
+        if date_text1 != datetime.strptime(date_text1, "%Y-%m-%d").strftime('%Y-%m-%d'):
+            raise ValueError
+        elif date_text2 != datetime.strptime(date_text2, "%Y-%m-%d").strftime('%Y-%m-%d'):
+            raise ValueError
+        date_text1 = datetime.strptime(date_text1, "%Y-%m-%d")
+        date_text2 = datetime.strptime(date_text2, "%Y-%m-%d")
+        if date_text2 >= date_text1:
+                return True
+        else:
+            return False
+    except ValueError:
+        return False
+
+
+
 
 import psycopg2
 # Importamos la Base de Datos
@@ -178,16 +196,16 @@ while (login):
       tennants = []
       print ()
       print("Lista de Tennants en CrossNot")
-      print('ID |  Telefono')
+      headers = ['ID',  'Telefono']
       
       i = 0
       while i < len(a):
           b = []
           b.append(a[i][0])
           b.append(a[i][1])
-          print(' {} | {}'.format(a[i][0],a[i][1]))
           tennants.append(b)
           i+=1
+      print(tabulate(tennants, headers, tablefmt="github"))
      
       inicio_sesion = True
       while (inicio_sesion):
@@ -548,21 +566,26 @@ while (login):
                           llamada2 = int(llamada2)
                           if 0<llamada2<4:
                               #mostramos todas las llamdas ya clasificadas
-                              query = 'SELECT l.id_llamada, l.id_supervisor, l.aprobacion FROM llamada l, supervisor s WHERE l.id_supervisor = s.id_supervisor AND s.id_tennant = {} ORDER BY l.id_supervisor;'.format(tennant)
+                              query = 'SELECT l.id_llamada, l.id_supervisor, l.aprobacion FROM llamada l NATURAL JOIN supervisor s WHERE  s.id_tennant = {} ORDER BY l.id_supervisor;'.format(tennant)
                               loc = conn.cursor()
                               loc.execute(query)
                               a = loc.fetchall()
                               loc.close()
                               l_clasificadas = [] #id de llamadas ya clasificadas
+                              llamadas = []
                               print ()
                               print("Lista de llamadas clasificadas del Tennant {}".format(tennant))
-                              print('id_llamada | id_supervisor | aprobacion')
-                          
-                              i = 0
-                              while i < len(a):
-                                  print('    {}     |        {}     |    {}     '.format(a[i][0],a[i][1], a[i][2]))
-                                  l_clasificadas.append(a[i][0])
-                                  i+=1
+                              headers = ('id_llamada' , 'id_supervisor',  'aprobacion')
+                              for i in a:
+                                  b = []
+                                  b.append(i[0])
+                                  b.append(i[1])
+                                  b.append(i[2])
+                                 
+                                  l_clasificadas.append(i[0])
+                                  llamadas.append(b)
+                              print(tabulate(llamadas, headers, tablefmt="github"))    
+                              
                                   
                           if llamada2 == 1:
                               comprobar = True
@@ -577,14 +600,13 @@ while (login):
                                           loc.execute(query)
                                           a = loc.fetchall()
                                           loc.close()
-                                          llamada = []
-                                          print('ids llamadas sin supervisar')
-                                          print('-------------------------')
-                                          i = 0
-                                          while i < len(a):
-                                              llamada.append(a[i][0])
-                                              print(a[i][0])
-                                              i+=1
+                                          llamada1 = []
+                                          llamada  = []
+                                          headers = ['ids llamadas sin supervisar']
+                                          for i in a:
+                                              llamada1.append([i[0]])
+                                              llamada.append(i[0])
+                                          print(tabulate(llamada1, headers, tablefmt="github"))
                                           i = True
                                           while (i):
                                               aprobar = input('Ingrese id de la llamada que desea supervisar: ')
@@ -594,8 +616,7 @@ while (login):
                                                       x = input('Ingrese (1) si desea aprobar la llamada, (0) para desaprobar: ')
                                                       if (Is_int(x)):
                                                            x = int(x)
-                                                           if x == 1:
-                                                               
+                                                           if x == 1:    
                                                                 cur = conn.cursor()
                                                                 cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
                                                                 conn.commit()
@@ -604,7 +625,7 @@ while (login):
                                                                 comprobar = False
                                                            elif x == 0:
                                                                 cur = conn.cursor()
-                                                                cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
+                                                                cur.execute("UPDATE llamada SET aprobacion = 0, id_supervisor = {} WHERE id_llamada = {};".format(supervisor, aprobar))
                                                                 conn.commit()
                                                                 cur.close()
                                                                 i = False
@@ -632,14 +653,14 @@ while (login):
                                                    x = int(x)
                                                    if x == 1:      
                                                         cur = conn.cursor()
-                                                        cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(s, aprobar))
+                                                        cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(s, l))
                                                         conn.commit()
                                                         cur.close()
                                                         i = False
                                                         comprobar = False
                                                    elif x == 0:
                                                         cur = conn.cursor()
-                                                        cur.execute("UPDATE llamada SET aprobacion = 1, id_supervisor = {} WHERE id_llamada = {};".format(s, aprobar))
+                                                        cur.execute("UPDATE llamada SET aprobacion = 0, id_supervisor = {} WHERE id_llamada = {};".format(s, l))
                                                         conn.commit()
                                                         cur.close()
                                                         i = False
@@ -700,22 +721,20 @@ while (login):
                   loc.execute(query)
                   a = loc.fetchall()
                   loc.close()
+                  campagnas1 = []
                   campagnas = []
                   print ()
                   print("Lista de Campañas del Tennant {} en CrossNot".format(tennant))
                   print()
-                  print ('Id_campaña | Fecha inicio campaña | Fecha fin campaña')
-                  
-                  i = 0
-                  while i < len(a):
+                  headers = ['Id_campagna', 'Fecha inicio campagna' , 'Fecha fin campagna']
+                  for i in a:
                       b = []
-                      b.append(a[i][0])
-                      b.append(a[i][1])
-                      b.append(a[i][2])
-                      print ('{}     | {}     | {}    '.format(a[i][0], a[i][1], a[i][2]))
-                      campagnas.append(b)
-                      i+=1
-                      
+                      b.append(i[0])
+                      b.append(i[1])
+                      b.append(i[2])
+                      campagnas.append(i[0])
+                      campagnas1.append(b)
+                  print(tabulate(campagnas1, headers, tablefmt="github"))    
                   o3 = True 
                   while (o3):
                       campagna = input('''
@@ -738,14 +757,14 @@ while (login):
                                       fecha_desde = input('Introducir fecha inicial (aaaa-mm-dd): ')
                                       fecha_hasta = input('Introducir fecha final   (aaaa-mm-dd): ') 
                                         
-                                      fechas = main(fecha_desde,fecha_hasta)
-                                      if fechas == True:
+                                      fechas = main2(fecha_desde,fecha_hasta)
+                                      if (fechas):
                                             cur5 = conn.cursor()
                                             cur5.execute("INSERT INTO campagna(inicio,fin,id_tennant) VALUES('{}','{}',{});".format(fecha_desde,fecha_hasta,tennant))
                                             conn.commit()
                                             cur5.close()
                                             o=False 
-                                            intresar = False
+                                            ingresar = False
                                             o3 = False
                                             break
                                       else: 
@@ -759,7 +778,7 @@ while (login):
                                       c1 = input("Ingrese id_campaña que quiere editar o eliminar:  ")
                                       if (Is_int(c1)):
                                           c1 = int(c1)
-                                          if c1 in campagnas[0]:
+                                          if c1 in campagnas:
                                               o = True
                                               while (o):
                                                   eliminar1 = input('''Esta seguro que desea eliminar la calificacion?
@@ -771,9 +790,8 @@ while (login):
                                                         cur5.execute("DELETE FROM campagna WHERE id_campagna = {};".format(c1))
                                                         conn.commit()
                                                         cur5.close()
-                                                        break
                                                         o = False
-                                                        intresar = False
+                                                        ingresar = False
                                                         o3 = False
                                                         break
                                                   elif (eliminar1 == '2'):
@@ -794,13 +812,13 @@ while (login):
                                       c1 = input("Ingrese id_campaña que quiere editar:  ")
                                       if (Is_int(c1)):
                                           c1 = int(c1)
-                                          if c1 in campagnas[0]:
+                                          if c1 in campagnas:
                                               o = True
                                               while (o):
                                                   fecha_desde = input('Introducir fecha inicial (aaaa-mm-dd): ')
                                                   fecha_hasta = input('Introducir fecha final   (aaaa-mm-dd): ') 
                                                     
-                                                  fechas = main(fecha_desde,fecha_hasta)
+                                                  fechas = main2(fecha_desde,fecha_hasta)
                                                   if (fechas):
                                                        cur5 = conn.cursor()
                                                        cur5.execute("UPDATE campagna SET inicio = '{}' WHERE id_campagna = {};".format(fecha_desde,c1))
@@ -839,6 +857,7 @@ while (login):
                               print('Ingrese opcion valida')
                       else: 
                           print('Ingrese numero valido')
+                                
                                 
                 
               elif mp == 4: 
