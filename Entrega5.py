@@ -274,7 +274,7 @@ while (login):
                          ---== Ver Llamadas ==---
                          [1] Ver Llamada
                          [2] Agregar Llamada
-                         [3] Editar Campaña
+                         [3] Editar Llamada
                          [4] Eliminar Llamada
                          [5] Volver Menu Opciones
                          [6] Salir de CrossNot
@@ -535,11 +535,7 @@ while (login):
                             login = False
                             conn.close()  
                             break 
-       
-       
-                     
-                      
-                    
+     
               elif mp == 2:
                   o2 = True 
                   while (o2):
@@ -873,7 +869,7 @@ while (login):
                   print ()
                   print("Lista de Campañas del Tennant {} en CrossNot".format(tennant))
                   print()
-                  headers = ['Id_campaña']
+                  headers = ['Id_campaña','Fecha Inicio','Fecha Fin']
                   ids_campagnas1 = []
                   ids_campagnas = []
                   for i in a:
@@ -889,7 +885,8 @@ while (login):
                       
                       campagnas4.append(b)
                       
-                  print(tabulate(ids_campagnas1, headers, tablefmt = "github" ))               
+                  print(tabulate(ids_campagnas1, headers, tablefmt = "github" ))  
+                  
                   o4 = True 
                   while (o4):
                        select_campagna = input('Seleccione Id_Campaña:    ')
@@ -908,23 +905,23 @@ while (login):
                                   loc.close()
                                   tipificaciones = []
                                   print ()
+                                  headers = ['Id_Tipificacion','Tipificacion (Dato)']
                                   print("Lista de Tipificaciones de la Campaña {}".format(select_campagna))
                                   print()
-                                  headers = ['Id_Tipificacion', 'Tipificacion (Dato)']
+                                  
                                   id_tipi_campa = []
-                                  prrint = []
-                                  for i in a:
+                                  
+                                  i = 0
+                                  while i < len(a):
                                       b = []
-                                      c = []
-                                      b.append(i[0])
-                                      id_tipi_campa.append(i[0])
-                                      b.append(i[1])
-                                      b.append(i[2])
+                                      b.append(a[i][1])
+                                      b.append(a[i][2])
+                                      id_tipi_campa.append((a[i][1]))
                                       tipificaciones.append(b)
-                                      c.append(i[1])
-                                      c.append(i[2])
-                                  print(tabulate(prrint, headers, tablefmt = "github" ))
-                    
+                                      i+=1     
+                                  
+                                  print(tabulate(tipificaciones, headers, tablefmt = "github" ))
+                                  
                                   tip = input('''
                      ---== Manejar Tipificaciones ==---
                      [1] Agregar tipificación
@@ -988,7 +985,7 @@ while (login):
                                                           if elegir_tipi in id_tipi_campa:
                                                               query1 = '''SELECT l.id_llamada, t.id 
                                                                         FROM llamada l LEFT JOIN tipificacion_dato d ON l.id_llamada = d.id_llamada JOIN agente a on a.id_agente = l.id_agente JOIN tennant t on a.id_tennant=t.id
-                                                                        where d.id_llamada IS NULL AND t.id={} '''.format(tennant)
+                                                                        where d.id_llamada IS NULL AND t.id={} order by l.id_llamada'''.format(tennant)
                                                               loc2 = conn.cursor()
                                                               loc2.execute(query1)
                                                               a2 = loc2.fetchall()
@@ -997,13 +994,16 @@ while (login):
                                                               print ()
                                                               print("Lista de Llamadas sin Campañas del Tennant {} en CrossNot".format(tennant))
                                                               print()
-                                                              print ('Id_llamada')
+                                                              headers=['Id_llamada']
                 
                                                               g = 0
                                                               while g < len(a2):
-                                                                  print('{}'.format(a2[g][0]))
-                                                                  llamadas_tennant.append(a2[g][0])
+                                                                  b = []
+                                                                  b.append(a2[g][0])
+                                                                  llamadas_tennant.append(b)
                                                                   g+=1 
+                                                                  
+                                                              print(tabulate(llamadas_tennant, headers, tablefmt = "github" ))
                   
                                                               sel = True
                                                               while (sel): 
@@ -1139,44 +1139,55 @@ while (login):
                                                                   a2 = loc2.fetchall()
                                                                   loc2.close()
                                                                   datos_camp_tipi = []
+                                                                  info = []
+                                                                  headers=['Id_TipificacionDato ','Dato']
                                 
                                                                   print ("Tabla valores a editar")
-                                                                  print ('Id_tipificaciondato   |   Valor')
+                                                                  print()
                                                                   
                                                                   i = 0
                                                                   while i < len(a2):
+                                                                      c = []
                                                                       b = []
+                                                                      c.append(a2[i][0])
+                                                                      c.append(a2[i][2])
                                                                       b.append(a2[i][0])
                                                                       b.append(a2[i][1])
                                                                       b.append(a2[i][2])
-                                                                      print ('{}    |   {}'.format(a2[i][0],a2[i][2]))
                                                                       datos_camp_tipi.append(b)
+                                                                      info.append(c)
                                                                       i+=1  
-                                                                      
-                                                                  id_dato_camp =[]
-                                                                  g = 0
-                                                                  while g < len(a2):
-                                                                      id_dato_camp.append(a2[g][0])
-                                                                      g+=1 
-                                                                      
-                                                                  j=0
-                                                                  for i in id_dato_camp:
-                                                                      val = datos_camp_tipi[1][2]
-                                                                      valor = input("Ingrese nuevo valor de {} para la tipificacion_dato {}:   ".format(val,i))
-                                                                      cur5 = conn.cursor()
-                                                                      cur5.execute("UPDATE tipificacion_dato SET valor = '{}' WHERE id_tipificaciondato = {};".format(valor,i))
-                                                                      conn.commit()
-                                                                      cur5.close()
-
-                                                                      if j == len(id_dato_camp)-1:
-                                                                            
-                                                                            o= False
-                                                                            edit_aso=False
-                                                                            ct = False
-                                                                            o4 = False 
-                                                                            break
-                                                                      j+=1
-                                                                      
+                                                                  
+                                                                  print(tabulate(info, headers, tablefmt = "github" ))
+                                                                  
+                                                                  if info:
+                                                                      id_dato_camp =[]
+                                                                      g = 0
+                                                                      while g < len(a2):
+                                                                          id_dato_camp.append(a2[g][0])
+                                                                          g+=1 
+                                                                          
+                                                                      j=0
+                                                                      for i in id_dato_camp:
+                                                                          val = datos_camp_tipi[1][2]
+                                                                          valor = input("Ingrese nuevo valor de {} para la tipificacion_dato {}:   ".format(val,i))
+                                                                          cur5 = conn.cursor()
+                                                                          cur5.execute("UPDATE tipificacion_dato SET valor = '{}' WHERE id_tipificaciondato = {};".format(valor,i))
+                                                                          conn.commit()
+                                                                          cur5.close()
+    
+                                                                          if j == len(id_dato_camp)-1:
+                                                                                o= False
+                                                                                edit_aso=False
+                                                                                ct = False
+                                                                                o4=False
+                                                                          j+=1
+                                                                  else: 
+                                                                      print('La tipificacion {} no tiene ninguna llamada relacionada por lo que no hay valores para editar'.format(elegir_tipi))
+                                                                      o= False
+                                                                      edit_aso=False
+                                                                      ct = False
+                                                                      o4=False
                                                               else:
                                                                  print('Ingrese un numero porfavor') 
                                                       else: 
@@ -1205,15 +1216,17 @@ while (login):
                                                           print ()
                                                           print("Lista de Llamadas de la Campaña {} en CrossNot".format(select_campagna))
                                                           print()
-                                                          print ('Id_llamada')
+                                                          headers=['Id_llamada']
+                                                          info=[]
                                                           
                                                           i = 0
                                                           while i < len(a2):
+                                                              c=[]
                                                               b = []
+                                                              c.append(a2[i][0])
                                                               b.append(a2[i][0])
                                                               b.append(a2[i][1])
-                                                              
-                                                              print ('{}   '.format(a2[i][0]))
+                                                              info.append(c)
                                                               llamadas_camp_tipi.append(b)
                                                               i+=1  
                                                               
@@ -1222,6 +1235,9 @@ while (login):
                                                           while g < len(a2):
                                                               id_llamada_camp.append(a2[g][0])
                                                               g+=1 
+                                                              
+                                                          print(tabulate(info, headers, tablefmt = "github" ))   
+                                                          
                                                           elige_llamada = input('Ingrese id_llamada que desea editar:   ')
                                                           if (Is_int(elige_llamada)):
                                                               elige_llamada = int(elige_llamada)
@@ -1267,6 +1283,7 @@ while (login):
                                           print('Ingrese opcion valida')
                           else: 
                                   print('ERROR: Este id de campaña no pertenece al Tennant {}'.format(tennant))
+                                    
                                     
                       
               elif mp == 5:
