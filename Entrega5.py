@@ -948,7 +948,7 @@ while (login):
                                                       conn.commit()
                                                       cur1.close()
                                                       
-                                                      query1 = 'select t.id_tipificacion from tipificacion t;'
+                                                      query1 = 'select t.id_tipificacion from tipificacion t order by t.id_tipificacion;'
                                                       loc2 = conn.cursor()
                                                       loc2.execute(query1)
                                                       a2 = loc2.fetchall()
@@ -1028,7 +1028,7 @@ while (login):
                                                                               g+=1 
                                                                               
                                                                         
-                                                                          val = input('Ingrese valor de la tipificacion ({}) que desea agregar:   '.format(datoo[0]))
+                                                                          val = input('Ingrese valor de la tipificacion ({}) que desea agregar:   '.format(datoo[0])).upper()
                                                                           
                                                                           cur2= conn.cursor()
                                                                           cur2.execute("INSERT INTO tipificacion_dato(id_llamada,id_tipificacion,valor) VALUES({},{},'{}');".format(select_campagna,elegir_tipi,val))
@@ -1292,22 +1292,27 @@ while (login):
                       id_tennants = []
                       for i in tennants:
                           id_tennants.append(i[0])
-                      print (''' 
-                                   --== Agentes actuales del Tennant {} ==--
-                                   '''.format(tennant))
+                      print ("Agentes actuales del Tennant {}".format(tennant))
+                      print()
                       query = 'SELECT * FROM agente WHERE id_tennant = {}'.format(tennant)
                       loc = conn.cursor()
                       loc.execute(query)
                       a = loc.fetchall()
                       loc.close()
                       id_agentes = []
-                      print('ID |  nombre  |  apellido  |  ID tennant')
+                      info = []
+                      headers=['ID', 'Nombre', 'Apellido']
                       
                       i = 0
                       while i < len(a):
-                          print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                          b=[]
+                          b.append(a[i][0])
+                          b.append(a[i][1])
+                          b.append(a[i][2])
                           id_agentes.append(a[i][0])
+                          info.append(b)
                           i+=1
+                      print(tabulate(info, headers, tablefmt = "github" )) 
                       
                       agente = input('''
                          ---== Manejar Agentes ==---
@@ -1331,9 +1336,7 @@ while (login):
                               cur5.close()
                         
                           elif agente == 2:
-                                print('''
-                                    ---== Editor de Agentes ==---
-                                    ''')
+                                
                                 edit = input("Ingrese el id del agente al cual desea editar: ")
                                 if (Is_int(edit)):
                                     edit = int(edit)
@@ -1344,22 +1347,32 @@ while (login):
                                         a = loc.fetchall()
                                         loc.close()
                                         id_agentes = []
-                                        print('ID |  nombre  |  apellido  |  ID tennant')
-                                      
+                                        info1=[]
+                                        headers=['ID', 'Nombre', 'Apellido', 'Id_tennant']
+                                        print('Informacion del Agente {}'.format(edit))
+                                        print()
                                         i = 0
                                         while i < len(a):
-                                            print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                                            b=[]
+                                            b.append(a[i][0])
+                                            b.append(a[i][1])
+                                            b.append(a[i][2])
+                                            b.append(a[i][3])
+                                            info1.append(b)
                                             i+=1
-                                    
-                                        ed5 = input('''
-                                            [1] Editar nombre
-                                            [2] Editar apellido
-                                            [3] Editar id tennant 
-                                            [3] Volver Menu Opciones
-                                            [4] Salir de CrossNot
                                             
-                                                
-                                            Ingrese una opcion [1-5]:   ''')
+                                        print(tabulate(info1, headers, tablefmt = "github" )) 
+                                        
+                                        ed5 = input('''
+                            ---== Editor de Agentes ==---
+                                [1] Editar nombre
+                                [2] Editar apellido
+                                [3] Editar id tennant 
+                                [4] Volver Menu Opciones
+                                [5] Salir de CrossNot
+                                
+                                    
+                                Ingrese una opcion [1-5]:   ''')
                                         if (Is_int(ed5)):
                                             ed5 = int(ed5)
                                             #Editar id_campaña
@@ -1410,10 +1423,23 @@ while (login):
                                 if (Is_int(errase)):
                                     errase = int(errase)
                                     if errase in id_agentes:
-                                        cur5 = conn.cursor()
-                                        cur5.execute('DELETE FROM agente WHERE id_agente = {} AND id_tennant = {};'.format(errase, tennant))
-                                        conn.commit()
-                                        cur5.close()
+                                        o = True
+                                        while (o):
+                                          eliminar1 = input('''Esta seguro que desea eliminar al agente {}?
+                                                           
+                                                              si (1)                       no (2)          
+                                          '''.format(errase))
+                                          if (eliminar1 == '1'):
+                                                cur5 = conn.cursor()
+                                                cur5.execute('DELETE FROM agente WHERE id_agente = {} AND id_tennant = {};'.format(errase, tennant))
+                                                conn.commit()
+                                                cur5.close()
+                                                o = False
+                                                break
+                                          elif (eliminar1 == '2'):
+                                              o=False
+                                          else:
+                                              print ('Ingrese una opcion válida.')
                                     else:
                                         print ('Este id agente no pertenece al Tennant {}'.format(tennant))
                                 else:
@@ -1435,23 +1461,27 @@ while (login):
                       id_tennants = []
                       for i in tennants:
                           id_tennants.append(i[0])
-                      print (''' 
-                                   --== Supervisores actuales del Tennant {} ==--
-                                   '''.format(tennant))
+                      print ("Supervisores actuales del Tennant {}".format(tennant))
                       query = 'SELECT * FROM supervisor WHERE id_tennant = {}'.format(tennant)
                       loc = conn.cursor()
                       loc.execute(query)
                       a = loc.fetchall()
                       loc.close()
                       id_supervisores = []
-                      print('ID |  nombre  |  apellido  |  ID tennant')
+                      info=[]
+                      print()
+                      headers=['ID', 'Nombre', 'Apellido']
                       
                       i = 0
                       while i < len(a):
-                          print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                          b=[]
+                          b.append(a[i][0])
+                          b.append(a[i][1])
+                          b.append(a[i][2])
                           id_supervisores.append(a[i][0])
+                          info.append(b)
                           i+=1
-                      
+                      print(tabulate(info, headers, tablefmt = "github" )) 
                       supervisor = input('''
                          ---== Manejar supervisores  ==---
                          [1] Agregar supervisor
@@ -1465,40 +1495,29 @@ while (login):
                           supervisor = int(supervisor)        
                           
                           if supervisor == 1:
-                              query = 'SELECT id_supervisor FROM supervisor ORDER BY id_supervisor'
+                              query = 'SELECT id_supervisor FROM supervisor ORDER BY id_supervisor desc limit 1'
                               loc = conn.cursor()
                               loc.execute(query)
                               a = loc.fetchall()
                               loc.close()
                               id_supervisoresT = []
                               j = 0
-                              print()
-                              print ('Id_supervisor existentes')
+                        
                               while j < len(a):
-                                  print(' {} '.format(a[j][0]))
                                   id_supervisoresT.append(a[j][0])
                                   j+=1
-                              sup1 = True 
-                              while sup1:
-                                  id_sup = input('Ingrese id_supervisor:  ')
-                                  if (Is_int(id_sup)):
-                                      id_sup = int(id_sup)
-                                      if(id_sup not in id_supervisoresT):
-                                          nombre = input("Ingrese Nombre: ").upper()
-                                          apellido = input("Ingrese Apellido: ").upper()
-                                          cur5 = conn.cursor()
-                                          cur5.execute("INSERT INTO supervisor(id_supervisor,nombre, apellido ,id_tennant) VALUES({},'{}','{}',{});".format(id_sup,nombre,apellido,tennant))
-                                          conn.commit()
-                                          cur5.close()
-                                          sup1=False
-                                      else:
-                                          print('Ingrese id_supervisor que no este en la lista')
-                                  else:
-                                      print('Ingrese numero porfavor')
+                              id_super = id_supervisoresT[0] + 1
+                                  
+                              nombre = input("Ingrese Nombre: ").upper()
+                              apellido = input("Ingrese Apellido: ").upper()
+                              cur5 = conn.cursor()
+                              cur5.execute("INSERT INTO supervisor(id_supervisor,nombre, apellido ,id_tennant) VALUES({},'{}','{}',{});".format(id_super,nombre,apellido,tennant))
+                              conn.commit()
+                              cur5.close()
+                              sup1=False
+                                      
                           elif supervisor == 2:
-                                print('''
-                                    ---== Editor de Supervisores ==---
-                                    ''')
+        
                                 edit = input("Ingrese el id del supervisor al cual desea editar: ")
                                 if (Is_int(edit)):
                                     edit = int(edit)
@@ -1508,23 +1527,31 @@ while (login):
                                         loc.execute(query)
                                         a = loc.fetchall()
                                         loc.close()
-                                        id_agentes = []
-                                        print('ID |  nombre  |  apellido  |  ID tennant')
+                                        print("Informacion del supervisor {}".format(edit))
+                                        info=[]
+                                        headers=['ID', 'Nombre', 'Apellido', 'Id_tennant']
+                                        print()
                                       
                                         i = 0
                                         while i < len(a):
-                                            print(' {} | {} | {} | {}'.format(a[i][0],a[i][1], a[i][2], a[i][3]))
+                                            b=[]
+                                            b.append(a[i][0])
+                                            b.append(a[i][1])
+                                            b.append(a[i][2])
+                                            b.append(a[i][3])
+                                            info.append(b)
                                             i+=1
-                                    
+                                        print(tabulate(info, headers, tablefmt = "github" )) 
                                         ed5 = input('''
-                                            [1] Editar nombre
-                                            [2] Editar apellido
-                                            [3] Editar id tennant
-                                            [4] Volver Menu Opciones
-                                            [5] Salir de CrossNot
-                                            
-                                                
-                                            Ingrese una opcion [1-5]:   ''')
+                          ---== Editor de Supervisores ==---
+                                [1] Editar nombre
+                                [2] Editar apellido
+                                [3] Editar id tennant
+                                [4] Volver Menu Opciones
+                                [5] Salir de CrossNot
+                                
+                                    
+                                Ingrese una opcion [1-5]:   ''')
                                         if (Is_int(ed5)):
                                             ed5 = int(ed5)
                                             #Editar id_campaña
@@ -1575,10 +1602,23 @@ while (login):
                                 if (Is_int(errase)):
                                     errase = int(errase)
                                     if errase in id_supervisores:
-                                        cur5 = conn.cursor()
-                                        cur5.execute('DELETE FROM supervisor WHERE id_supervisor = {} AND id_tennant = {};'.format(errase, tennant))
-                                        conn.commit()
-                                        cur5.close()
+                                        o = True
+                                        while (o):
+                                          eliminar1 = input('''Esta seguro que desea eliminar al supervisor {}?
+                                                           
+                                                              si (1)                       no (2)          
+                                          '''.format(errase))
+                                          if (eliminar1 == '1'):
+                                                cur5 = conn.cursor()
+                                                cur5.execute('DELETE FROM supervisor WHERE id_supervisor = {} AND id_tennant = {};'.format(errase, tennant))
+                                                conn.commit()
+                                                cur5.close()
+                                                o = False
+                                                break
+                                          elif (eliminar1 == '2'):
+                                              o=False
+                                          else:
+                                              print ('Ingrese una opcion válida.')
                                     else:
                                         print ('Este id supervisor no pertenece al Tennant {}'.format(tennant))
                                 else:
@@ -1604,16 +1644,18 @@ while (login):
                       a = loc.fetchall()
                       loc.close() 
                       info_tennant = []
-                      print('ID |  telefono')
+                      headers=['ID', 'Telefono']
+                      print("Informacion Tennants")
+                      print()
                       
                       i = 0
                       while i < len(a):
                           b=[]
                           b.append(a[i][0])
                           b.append(a[i][1])
-                          print(' {} | {} '.format(a[i][0],a[i][1]))
                           info_tennant.append(b)
                           i+=1
+                      print(tabulate(info_tennant, headers, tablefmt = "github" )) 
                       
                       tens = []
                       r = 0
@@ -1665,15 +1707,17 @@ while (login):
                                             a = loc.fetchall()
                                             loc.close() 
                                             info_super= []
-                                            print('ID supervisor |  nombre   | apellido  ')
-                                              
+                                            info=[]
+                                            headers =['ID supervisor', 'Nombre', 'Apellido']
+                                            print()
+            
                                             i = 0
                                             while i < len(a):
                                                   b=[]
                                                   b.append(a[i][0])
                                                   b.append(a[i][1])
-                                                  print(' {} | {} | {} '.format(a[i][0],a[i][1],a[i][2]))
-                                                  info_tennant.append(b)
+                                                  b.append(a[i][2])
+                                                  info.append(b)
                                                   i+=1
                                                   
                                             cant_super = []
@@ -1681,7 +1725,7 @@ while (login):
                                             while r < len(a):
                                                   cant_super.append(a[r][0])
                                                   r+=1
-                                            
+                                            print(tabulate(info, headers, tablefmt = "github" )) 
                                             corr = True 
                                             while (corr):
                                                 id7 = input("Indique el ID del supervisor que quiere modificar: ")
