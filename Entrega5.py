@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 from tabulate import tabulate
+import random 
 #funcion IS_INT me ayda a determinar si es o no un valor numerico. me inspiro en la funcion de c#
 
 def Is_int(x):
@@ -1030,7 +1031,7 @@ while (login):
                                                   edit_aso = True 
                                                   while (edit_aso):
                                                       
-                                                      elegir_tipi = input('Ingrese id_tipificacion que desea editar:   ')
+                                                      elegir_tipi = input('Ingrese id_tipificacion que desea asociar:   ')
                                                       if (Is_int(elegir_tipi)):
                                                           elegir_tipi = int(elegir_tipi)
                                                           if elegir_tipi in id_tipi_campa:
@@ -1046,20 +1047,22 @@ while (login):
                                                               print("Lista de Llamadas sin Campañas del Tennant {} en CrossNot".format(tennant))
                                                               print()
                                                               headers=['Id_llamada']
+                                                              info=[]
                 
                                                               g = 0
                                                               while g < len(a2):
                                                                   b = []
                                                                   b.append(a2[g][0])
-                                                                  llamadas_tennant.append(b)
+                                                                  info.append(b)
+                                                                  llamadas_tennant.append(a2[g][0])
                                                                   g+=1 
                                                                   
-                                                              print(tabulate(llamadas_tennant, headers, tablefmt = "github" ))
+                                                              print(tabulate(info, headers, tablefmt = "github" ))
                   
                                                               sel = True
                                                               while (sel): 
                                                                   
-                                                                  select_llamada = input('Ingrese id_llamada que quiere editar:   ')
+                                                                  select_llamada = input('Ingrese id_llamada que quiere asociar:   ')
                                                                   if (Is_int(select_llamada)):
                                                                       select_llamada = int(select_llamada)
                                                                       
@@ -1082,9 +1085,10 @@ while (login):
                                                                           val = input('Ingrese valor de la tipificacion ({}) que desea agregar:   '.format(datoo[0])).upper()
                                                                           
                                                                           cur2= conn.cursor()
-                                                                          cur2.execute("INSERT INTO tipificacion_dato(id_llamada,id_tipificacion,valor) VALUES({},{},'{}');".format(select_campagna,elegir_tipi,val))
+                                                                          cur2.execute("INSERT INTO tipificacion_dato(id_llamada,id_tipificacion,valor) VALUES({},{},'{}');".format(select_llamada,elegir_tipi,val))
                                                                           conn.commit()
                                                                           cur2.close()
+                                                                         
                                                                           
                                                                           cur5 = conn.cursor()
                                                                           cur5.execute("UPDATE llamada SET entrada_salida = 1 WHERE id_llamada = {};".format(select_llamada))
@@ -1104,9 +1108,9 @@ while (login):
                                                                           while g < len(a2):
                                                                               fechai.append(a2[g][0])
                                                                               g+=1 
-                                                                         
+                                                                          
                                                                           cur = conn.cursor()
-                                                                          cur.execute("UPDATE llamada SET fecha = '{}' WHERE id_llamada = {};".format(fechai[0],select_llamada))
+                                                                          cur.execute("UPDATE llamada SET fecha_inicio = '{}' WHERE id_llamada = {};".format(fechai[0],select_llamada))
                                                                           conn.commit()
                                                                           cur.close()
                                                                           
