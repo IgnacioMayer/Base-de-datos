@@ -262,14 +262,27 @@ while (login):
                       llamadas_tennant = [] #id de llamadas del tennant
                       print ()
                       print("Lista de llamadas")
-                      print('id_llamada | ubicacion | fecha_inicio | fecha_fin | transcripcion | aprovacion | entrada(0) salida(1) | rut_cliente | id_agente | id_supervisor')
-                  
+                      print()
+                      headers=['Id_llamada', 'Ubicacion', 'Fecha_inicio', 'Fecha_fin', 'Transcripcion', 'Aprobcion', 'Entrada(0)/Salida(1)', 'Rut_cliente', 'Id_agente', 'Id_supervisor']
+                      info=[]
                       i = 0
                       while i < len(a):
-                          print('   {}   |    {}   |    {}   |    {}   |    {}   |    {}   |    {}    |    {}   |    {}    |    {}   '.format(a[i][0],a[i][1], a[i][2],a[i][3],a[i][4], a[i][5],a[i][6],a[i][7], a[i][8],a[i][9]))
+                          b=[]
+                          b.append(a[i][0])
+                          b.append(a[i][1])
+                          b.append(a[i][2])
+                          b.append(a[i][3])
+                          b.append(a[i][4])
+                          b.append(a[i][5])
+                          b.append(a[i][6])
+                          b.append(a[i][7])
+                          b.append(a[i][8])
+                          b.append(a[i][9])
+                          info.append(b)
                           llamadas_tennant.append(a[i][0])
                           i+=1
-
+                      print(tabulate(info, headers, tablefmt="github")) 
+                      
                       llamada = input('''
                          ---== Ver Llamadas ==---
                          [1] Ver Llamada
@@ -299,14 +312,27 @@ while (login):
                                           
                                           print ()
                                           print("Informacion Llamada {} Seleccionada".format(idllamada))
-                                          print('id_llamada | ubicacion | fecha_inicio | fecha_fin | transcripcion | aprobacion | entrada(0)_salida(1) | rut_cliente | id_agente | id_supervisor')
-                            
+                                          print()
+                                          headers=['Id_llamada', 'Ubicacion', 'Fecha_inicio', 'Fecha_fin', 'Transcripcion', 'Aprobcion', 'Entrada(0)/Salida(1)', 'Rut_cliente', 'Id_agente', 'Id_supervisor']
+                                          info=[]
                                           i = 0
                                           while i < len(a):
-                                              print('     {}  |   {}     |   {}     |   {}     |   {}     |   {}     |    {}      |     {}     |     {}      |      {}     '.format(a[i][0],a[i][1], a[i][2],a[i][3],a[i][4], a[i][5],a[i][6],a[i][7], a[i][8],a[i][9]))
+                                              b=[]
+                                              b.append(a[i][0])
+                                              b.append(a[i][1])
+                                              b.append(a[i][2])
+                                              b.append(a[i][3])
+                                              b.append(a[i][4])
+                                              b.append(a[i][5])
+                                              b.append(a[i][6])
+                                              b.append(a[i][7])
+                                              b.append(a[i][8])
+                                              b.append(a[i][9])
+                                              info.append(b)
                                               i+=1
                                           time.sleep(5)
                                           comprobar = False 
+                                          print(tabulate(info, headers, tablefmt="github")) 
                                           
                                       else:    
                                           print('ERROR: Este id de llamada no pertenece al tennant {}'.format(tennant))
@@ -320,31 +346,48 @@ while (login):
                             idagentes = []
                             print ()
                             print("Lista de agentes del Tennant {}".format(tennant))
-                            print('id_agente  | nombre  | apellido')
+                            print()
+                            headers=['Id_agente', 'Nombre','Apellido']
+                            info=[]
                           
                             i = 0
                             while i < len(a):
-                                  print('    {}     |        {}     |    {}     '.format(a[i][0],a[i][1], a[i][2]))
-                                  idagentes.append(a[i][0])
-                                  i+=1
-                              
+                                b=[]
+                                b.append(a[i][0])
+                                b.append(a[i][1])
+                                b.append(a[i][2])
+                                info.append(b)
+                                idagentes.append(a[i][0])
+                                i+=1
+                            print(tabulate(info, headers, tablefmt="github")) 
+                            
                             query = "SELECT rut, nombre, apellido, comuna, calle, numero_calle, telefono FROM cliente"
                             loc = conn.cursor()
                             loc.execute(query)
                             a = loc.fetchall()
                             loc.close()
                             rutcilientes = []
+                            info1=[]
                             print ()
                             print()
                             print("Lista de Clientes")
-                            print('rut  | nombre  | apellido  |  comuna  |  calle  |  nuemro_calle  |  telefono')
+                            headers1=['Rut', 'Nombre', 'Apellido', 'Comuna', 'Calle', 'Nuemro_calle', 'Telefono']
                           
                             i = 0
                             while i < len(a):
-                                  print('    {}     |     {}    |    {}      |    {}    |    {}    |    {}    '.format(a[i][0],a[i][1], a[i][2], a[i][3],a[i][4],a[i][5],a[i][6]))
+                                  b=[]
+                                  b.append(a[i][0])
+                                  b.append(a[i][1])
+                                  b.append(a[i][2])
+                                  b.append(a[i][3])
+                                  b.append(a[i][4])
+                                  b.append(a[i][5])
+                                  b.append(a[i][6])
+                                  info1.append(b)
                                   rutcilientes.append(a[i][0])
                                   i+=1 
-                                  
+                            print(tabulate(info1, headers1, tablefmt="github")) 
+                            
                             age = True 
                             while age:
                                 i1 = input("ID Agente: ")
@@ -406,13 +449,21 @@ while (login):
                                                                                             idsupervisores = []
                                                                                             print ()
                                                                                             print("Lista de supervisores del Tennant {}".format(tennant))
-                                                                                            print('id_supervisor  | nombre  | apellido')
+                                                                                            headers1=['Id_supervisor', 'Nombre', 'Apellido']
+                                                                                            info1=[]
                                                                                           
                                                                                             i = 0
                                                                                             while i < len(a):
-                                                                                                  print('    {}     |        {}     |    {}     '.format(a[i][0],a[i][1], a[i][2]))
+                                                                                                  b=[]
+                                                                                                  b.append(a[i][0])
+                                                                                                  b.append(a[i][1])
+                                                                                                  b.append(a[i][2])
+                                                                                                  info.append(b)
                                                                                                   idsupervisores.append(a[i][0])
                                                                                                   i+=1
+                                                                                            
+                                                                                            print(tabulate(info1, headers1, tablefmt="github")) 
+                                                                                            
                                                                                             ent = False
                                                                                             sup = True 
                                                                                             while sup:
