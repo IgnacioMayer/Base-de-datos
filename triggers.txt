@@ -1,20 +1,12 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> af2a23b2dc13a35732be7012ea4e48673182c77b
 TRIGGER 1: no permite que un agente realice/reciba mas de una llamada a la ves 
 
 CREATE FUNCTION revisar_llamada()
 RETURNS trigger 
 AS $$ 
 revisar = plpy.execute(''' 
-<<<<<<< HEAD
      select count(*) cantidad_llamadas from llamada where fecha_inicio < '{}' and fecha_fin > '{}' and id_agente = {};'''.format(TD['new']['fecha_inicio'], TD['new']['fecha_inicio'], TD['new']['id_agente']))
 if revisar[0][0] == 0:
-=======
-     select count(*) c from llamada where fecha_inicio < '{}' and fecha_fin > '{}' and id_agente = {};'''.format(TD['new']['fecha_inicio'], TD['new']['fecha_inicio'], TD['new']['id_agente']))
-if revisar[0]['c'] == 0:
->>>>>>> af2a23b2dc13a35732be7012ea4e48673182c77b
      return 'OK'  
 else:
      return 'SKIP' 
@@ -22,9 +14,26 @@ $$ LANGUAGE plpythonu;
 
 CREATE trigger revisar_llamada BEFORE INSERT ON llamada FOR EACH ROW EXECUTE PROCEDURE revisar_llamada();
 
+
+TRIGGER 2: no permite que una llamada sea evaluada mas de una vez
+
+CREATE FUNCTION revisar_supervicion()
+RETURNS trigger 
+AS $$ 
+aprobacion = plpy.execute("SELECT aprobacion FROM llamada  WHERE id_llamada = {}".format(TD['new']['id_llamada']))
+if  TD['old']['aprobacion']== 0 or TD['old']['aprobacion'] == 1:
+	return "SKIP"
+return "OK"
+$$ LANGUAGE plpythonu;
+
+CREATE TRIGGER revisar_supervicion BEFORE UPDATE ON llamada  
+FOR EACH ROW EXECUTE PROCEDURE revisar_supervicion();
+
+
 TRIGGER 3: No permitir que una llamada este asociada a mas de una campaña. 
 
 Respuesta :Nuestro grupo no necesita hacer este trigger ya que de la forma en que diseñamos nuestra base de datos y como ingresamos los datos, las llamadas solo pertenecen a una campaña ya que consideramos que una llamada se hace con un objetivo único y focalizado.
+
 
 TRIGGER 5: no permite que una llamada nueva se asocie a una campaña expirada
 
@@ -43,6 +52,7 @@ $$ LANGUAGE plpythonu;
 
 CREATE trigger r_campagna_llamada BEFORE INSERT ON tipificacion_campagna FOR EACH ROW EXECUTE PROCEDURE r_campagna_llamada();
 
+
 TRIGGER 6: no permite que una llamada nueva se inserte atrasada en mas de un dia. 
 
 CREATE FUNCTION r_fecha_llamada()
@@ -55,16 +65,11 @@ date_time = now.strftime("%Y-%m-%d")
 date_time_str = TD['new']['fecha_inicio']
 date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
 
-
 if date_time != str(date_time_obj.date()):
     return 'SKIP'
 else:
     return 'OK'  	
 $$ LANGUAGE plpythonu;
 
-<<<<<<< HEAD
-
-
-=======
 CREATE trigger r_fecha_llamada BEFORE INSERT ON llamada FOR EACH ROW EXECUTE PROCEDURE r_fecha_llamada();  
->>>>>>> af2a23b2dc13a35732be7012ea4e48673182c77b
+
