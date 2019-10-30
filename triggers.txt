@@ -1,4 +1,3 @@
-
 TRIGGER 1: no permite que un agente realice/reciba mas de una llamada a la ves 
 
 CREATE FUNCTION revisar_llamada()
@@ -14,26 +13,9 @@ $$ LANGUAGE plpythonu;
 
 CREATE trigger revisar_llamada BEFORE INSERT ON llamada FOR EACH ROW EXECUTE PROCEDURE revisar_llamada();
 
-
-TRIGGER 2: no permite que una llamada sea evaluada mas de una vez
-
-CREATE FUNCTION revisar_supervicion()
-RETURNS trigger 
-AS $$ 
-aprobacion = plpy.execute("SELECT aprobacion FROM llamada  WHERE id_llamada = {}".format(TD['new']['id_llamada']))
-if  TD['old']['aprobacion']== 0 or TD['old']['aprobacion'] == 1:
-	return "SKIP"
-return "OK"
-$$ LANGUAGE plpythonu;
-
-CREATE TRIGGER revisar_supervicion BEFORE UPDATE ON llamada  
-FOR EACH ROW EXECUTE PROCEDURE revisar_supervicion();
-
-
 TRIGGER 3: No permitir que una llamada este asociada a mas de una campaña. 
 
 Respuesta :Nuestro grupo no necesita hacer este trigger ya que de la forma en que diseñamos nuestra base de datos y como ingresamos los datos, las llamadas solo pertenecen a una campaña ya que consideramos que una llamada se hace con un objetivo único y focalizado.
-
 
 TRIGGER 5: no permite que una llamada nueva se asocie a una campaña expirada
 
@@ -51,7 +33,6 @@ else:
 $$ LANGUAGE plpythonu;
 
 CREATE trigger r_campagna_llamada BEFORE INSERT ON tipificacion_campagna FOR EACH ROW EXECUTE PROCEDURE r_campagna_llamada();
-
 
 TRIGGER 6: no permite que una llamada nueva se inserte atrasada en mas de un dia. 
 
@@ -73,4 +54,3 @@ else:
 $$ LANGUAGE plpythonu;
 
 CREATE trigger r_fecha_llamada BEFORE INSERT ON llamada FOR EACH ROW EXECUTE PROCEDURE r_fecha_llamada();  
-
