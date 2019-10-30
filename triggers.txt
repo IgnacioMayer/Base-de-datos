@@ -17,6 +17,22 @@ TRIGGER 3: No permitir que una llamada este asociada a mas de una campaña.
 
 Respuesta :Nuestro grupo no necesita hacer este trigger ya que de la forma en que diseñamos nuestra base de datos y como ingresamos los datos, las llamadas solo pertenecen a una campaña ya que consideramos que una llamada se hace con un objetivo único y focalizado.
 
+
+TRIGGER 2: no permite que una llamada sea evaluada mas de una vez
+
+CREATE FUNCTION revisar_supervicion()
+RETURNS trigger 
+AS $$ 
+aprobacion = plpy.execute("SELECT aprobacion FROM llamada  WHERE id_llamada = {}".format(TD['new']['id_llamada']))
+if  TD['old']['aprobacion']== 0 or TD['old']['aprobacion'] == 1:
+	return "SKIP"
+return "OK"
+$$ LANGUAGE plpythonu;
+
+CREATE TRIGGER revisar_supervicion BEFORE UPDATE ON llamada  
+FOR EACH ROW EXECUTE PROCEDURE revisar_supervicion();
+
+
 TRIGGER 5: no permite que una llamada nueva se asocie a una campaña expirada
 
 CREATE FUNCTION r_campagna_llamada()
