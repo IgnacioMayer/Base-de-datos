@@ -1,11 +1,11 @@
-  
+
 TRIGGER 1: no permite que un agente realice/reciba mas de una llamada a la ves 
 
 CREATE FUNCTION revisar_llamada()
 RETURNS trigger 
 AS $$ 
 revisar = plpy.execute(''' 
-     select count(*) from llamada where fecha_inicio < '{}' and fecha_fin > '{}' and id_agente = {};'''.format(TD['new']['fecha_inicio'], TD['new']['fecha_inicio'], TD['new']['id_agente']))
+     select count(*) cantidad_llamadas from llamada where fecha_inicio < '{}' and fecha_fin > '{}' and id_agente = {};'''.format(TD['new']['fecha_inicio'], TD['new']['fecha_inicio'], TD['new']['id_agente']))
 if revisar[0][0] == 0:
      return 'OK'  
 else:
@@ -70,5 +70,7 @@ else:
 $$ LANGUAGE plpythonu;
 
 CREATE trigger r_fecha_llamada BEFORE INSERT ON llamada FOR EACH ROW EXECUTE PROCEDURE r_fecha_llamada();
+
+
 
 
