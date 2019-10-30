@@ -5,8 +5,8 @@ CREATE FUNCTION revisar_llamada()
 RETURNS trigger 
 AS $$ 
 revisar = plpy.execute(''' 
-     select count(*) cantidad_llamadas from llamada where fecha_inicio < '{}' and fecha_fin > '{}' and id_agente = {};'''.format(TD['new']['fecha_inicio'], TD['new']['fecha_inicio'], TD['new']['id_agente']))
-if revisar[0][0] == 0:
+     select count(*) c from llamada where fecha_inicio < '{}' and fecha_fin > '{}' and id_agente = {};'''.format(TD['new']['fecha_inicio'], TD['new']['fecha_inicio'], TD['new']['id_agente']))
+if revisar[0]['c'] == 0:
      return 'OK'  
 else:
      return 'SKIP' 
@@ -41,10 +41,10 @@ CREATE FUNCTION r_campagna_llamada()
 RETURNS trigger 
 AS $$
 revisar = plpy.execute(''' 
-     SELECT count(*) campagna_validas
+     SELECT count(*) c
      FROM campagna
      WHERE id_campagna = {} AND inicio < CURRENT_DATE and fin > CURRENT_DATE;'''.format(TD['new']['id_campagna']))
-if revisar[0][0] == 0:
+if revisar[0]['c'] == 0:
      return 'SKIP' 
 else:
      return 'OK' 
@@ -64,6 +64,7 @@ date_time = now.strftime("%Y-%m-%d")
 
 date_time_str = TD['new']['fecha_inicio']
 date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
+
 
 if date_time != str(date_time_obj.date()):
     return 'SKIP'
